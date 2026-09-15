@@ -18,3 +18,18 @@ CREATE TABLE bookings (
     booking_token VARCHAR(50) UNIQUE,
     booked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE procurement_records (
+    id SERIAL PRIMARY KEY,
+    farmer_id INTEGER NOT NULL REFERENCES farmers(id),
+    booking_id INTEGER NOT NULL REFERENCES bookings(id),
+    produce_type VARCHAR(100) NOT NULL,
+    quantity_kg NUMERIC(10,2) NOT NULL CHECK (quantity_kg > 0),
+    quality_grade VARCHAR(20),
+    procurement_status VARCHAR(20) DEFAULT 'accepted'
+        CHECK (procurement_status IN ('accepted', 'rejected', 'pending')),
+    price_per_kg NUMERIC(10,2) CHECK (price_per_kg >= 0),
+    total_amount NUMERIC(12,2) CHECK (total_amount >= 0),
+    procurement_date DATE DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
