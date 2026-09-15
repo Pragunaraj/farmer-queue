@@ -1,19 +1,20 @@
-CREATE TABLE farmers (
+CREATE TABLE slots (
     id SERIAL PRIMARY KEY,
-    full_name VARCHAR(100) NOT NULL,
-    phone_number VARCHAR(15) UNIQUE NOT NULL,
-    password_hash TEXT,
+    center_id INTEGER NOT NULL REFERENCES procurement_centers(id),
+    slot_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    max_capacity INTEGER NOT NULL CHECK (max_capacity > 0),
+    booked_count INTEGER DEFAULT 0 CHECK (booked_count >= 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE procurement_centers (
+CREATE TABLE bookings (
     id SERIAL PRIMARY KEY,
-    center_name VARCHAR(150) NOT NULL,
-    address TEXT NOT NULL,
-    district VARCHAR(100),
-    state VARCHAR(100),
-    contact_number VARCHAR(15),
-    opening_time TIME,
-    closing_time TIME,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    farmer_id INTEGER NOT NULL REFERENCES farmers(id),
+    slot_id INTEGER NOT NULL REFERENCES slots(id),
+    booking_status VARCHAR(20) DEFAULT 'confirmed'
+        CHECK (booking_status IN ('confirmed', 'completed', 'cancelled')),
+    booking_token VARCHAR(50) UNIQUE,
+    booked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
