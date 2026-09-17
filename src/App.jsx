@@ -1,7 +1,11 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import "./App.css";
 import SlotBooking from "./SlotBooking";
 import Queue from "./Queue";
+import Dashboard from "./pages/admin/Dashboard";
+import ScanToken from "./pages/admin/ScanToken";
+import QualityEntry from "./pages/admin/QualityEntry";
+import Inventory from "./pages/admin/Inventory";
 
 function Home() {
   return (
@@ -14,6 +18,10 @@ function Home() {
           <Link to="/login">Farmer Login</Link>
           <Link to="/book-slot">Book Slot</Link>
           <Link to="/queue">Check Queue</Link>
+          <Link to="/admin/dashboard">Admin Dashboard</Link>
+          <Link to="/admin/scan">Scan Token</Link>
+          <Link to="/admin/quality">Quality Entry</Link>
+          <Link to="/admin/inventory">Inventory</Link>
         </div>
       </nav>
 
@@ -60,10 +68,15 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/book-slot" element={<SlotBooking />} />
         <Route path="/queue" element={<Queue />} />
+        <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/admin/scan" element={<ScanToken />} />
+        <Route path="/admin/quality" element={<QualityEntry />} />
+        <Route path="/admin/inventory" element={<Inventory />} />
       </Routes>
     </BrowserRouter>
   );
