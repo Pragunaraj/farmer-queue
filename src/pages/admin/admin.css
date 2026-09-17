@@ -1329,3 +1329,436 @@
   color: #059669;
   font-family: 'JetBrains Mono', monospace;
 }
+
+/* ==========================================================================
+   Gate Verification Scanner (ScanToken.jsx) - Styles Matching Screenshot
+   ========================================================================== */
+.scanner-page-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .scanner-page-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.scanner-left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Scanner Tabs */
+.scanner-mode-tabs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scanner-tab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scanner-tab-pill:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.scanner-tab-pill.active {
+  background: #14532d;
+  color: #ffffff;
+  border-color: #14532d;
+  box-shadow: 0 2px 8px rgba(20, 83, 45, 0.25);
+}
+
+/* Camera Viewfinder Box */
+.camera-viewfinder-box {
+  background: #0a1122;
+  border-radius: var(--radius-lg);
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+}
+
+/* 4 Emerald Corner Brackets */
+.camera-corner {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  pointer-events: none;
+}
+
+.corner-tl {
+  top: 24px;
+  left: 24px;
+  border-top: 3.5px solid #10b981;
+  border-left: 3.5px solid #10b981;
+  border-top-left-radius: 8px;
+}
+
+.corner-tr {
+  top: 24px;
+  right: 24px;
+  border-top: 3.5px solid #10b981;
+  border-right: 3.5px solid #10b981;
+  border-top-right-radius: 8px;
+}
+
+.corner-bl {
+  bottom: 24px;
+  left: 24px;
+  border-bottom: 3.5px solid #10b981;
+  border-left: 3.5px solid #10b981;
+  border-bottom-left-radius: 8px;
+}
+
+.corner-br {
+  bottom: 24px;
+  right: 24px;
+  border-bottom: 3.5px solid #10b981;
+  border-right: 3.5px solid #10b981;
+  border-bottom-right-radius: 8px;
+}
+
+/* Center Prompt & Laser Line */
+.camera-idle-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  z-index: 2;
+  padding: 20px;
+}
+
+.qr-icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
+.camera-title-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.camera-sub-text {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.laser-scanner-line {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #10b981 20%, #34d399 50%, #10b981 80%, transparent);
+  box-shadow: 0 0 16px 3px rgba(16, 185, 129, 0.85);
+  animation: laserSweep 2s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 3;
+}
+
+@keyframes laserSweep {
+  0% {
+    top: 15%;
+    opacity: 0.7;
+  }
+  50% {
+    top: 85%;
+    opacity: 1;
+  }
+  100% {
+    top: 15%;
+    opacity: 0.7;
+  }
+}
+
+/* Full-width Start Scan Button */
+.btn-start-scan {
+  width: 100%;
+  padding: 14px;
+  background: #14532d;
+  color: #ffffff;
+  border: 1px solid #166534;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(20, 83, 45, 0.25);
+}
+
+.btn-start-scan:hover {
+  background: #0f3f22;
+  box-shadow: 0 6px 16px rgba(20, 83, 45, 0.35);
+}
+
+.btn-start-scan.is-scanning {
+  background: #991b1b;
+  border-color: #b91c1c;
+}
+
+/* Right Panel: Stepper, Tamper-Proof & Stats */
+.scanner-right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Stepper Card */
+.stepper-process-card {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.stepper-header-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 20px 0;
+}
+
+.stepper-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stepper-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+}
+
+.stepper-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 34px;
+  left: 15px;
+  bottom: -16px;
+  width: 2px;
+  background: #e2e8f0;
+}
+
+.step-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+  z-index: 2;
+}
+
+.step-indicator.active {
+  background: #14532d;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(20, 83, 45, 0.15);
+}
+
+.step-indicator.done {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.step-indicator.pending {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1.5px solid #cbd5e1;
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.step-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.step-desc-text {
+  font-size: 12.5px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Tamper Proof Card */
+.tamper-proof-card {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.tamper-proof-icon {
+  color: #16a34a;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tamper-proof-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #166534;
+  margin: 0 0 4px 0;
+}
+
+.tamper-proof-body {
+  font-size: 12px;
+  color: #15803d;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Stats Row: Scanned Today, Approved, Rejected */
+.scanner-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.scanner-stat-card {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px 12px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.scanner-stat-num {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px 0;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.scanner-stat-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Live Video Feed & Camera Overlay Styles */
+.camera-video-stream {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.camera-badge-live {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  background: rgba(11, 19, 40, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #10b981;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 4;
+  letter-spacing: 0.05em;
+  font-family: 'JetBrains Mono', monospace;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.camera-badge-live .live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10b981;
+  animation: radar-pulse 1.8s infinite;
+}
+
+.camera-permission-fallback {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  max-width: 340px;
+  padding: 24px;
+  background: rgba(11, 19, 40, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.camera-fallback-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

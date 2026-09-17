@@ -1,155 +1,6 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "./AdminLayout";
-
-const INITIAL_TOKENS = [
-  {
-    id: "#AGRI-8402",
-    farmer: "Rameshwar Lal",
-    phone: "+91 98290 12841",
-    village: "Chomu, Jaipur",
-    crop: "Wheat (HD-2967)",
-    cropCategory: "Wheat",
-    quantity: "45 Qtl",
-    slot: "09:00 AM",
-    status: "Waiting",
-    moisture: "--",
-    grade: "Pending Gate Entry",
-    price: "₹ 2,275 / Qtl",
-    txHash: "0x8f3b...19a2",
-  },
-  {
-    id: "#AGRI-8403",
-    farmer: "Sunita Devi",
-    phone: "+91 94140 88210",
-    village: "Bassi, Jaipur",
-    crop: "Paddy (PR-114)",
-    cropCategory: "Paddy",
-    quantity: "60 Qtl",
-    slot: "09:15 AM",
-    status: "Gate Verified",
-    moisture: "12.1%",
-    grade: "Queue for Quality Bay 2",
-    price: "₹ 2,183 / Qtl",
-    txHash: "0x3e11...45bc",
-  },
-  {
-    id: "#AGRI-8404",
-    farmer: "Bhanwar Singh",
-    phone: "+91 97830 55102",
-    village: "Amer, Jaipur",
-    crop: "Wheat (WH-1105)",
-    cropCategory: "Wheat",
-    quantity: "80 Qtl",
-    slot: "09:30 AM",
-    status: "In Inspection",
-    moisture: "10.8%",
-    grade: "Grade A (FAQ Standard)",
-    price: "₹ 2,275 / Qtl",
-    txHash: "0x77d2...990f",
-  },
-  {
-    id: "#AGRI-8405",
-    farmer: "Geeta Kumari",
-    phone: "+91 99281 77319",
-    village: "Dudu, Jaipur",
-    crop: "Cotton (Bt)",
-    cropCategory: "Cotton",
-    quantity: "35 Qtl",
-    slot: "09:45 AM",
-    status: "Paid",
-    moisture: "8.5%",
-    grade: "Premium Long Staple",
-    price: "₹ 7,020 / Qtl",
-    txHash: "0x91a0...33c1",
-  },
-  {
-    id: "#AGRI-8406",
-    farmer: "Mohan Ram",
-    phone: "+91 96102 44908",
-    village: "Phulera, Jaipur",
-    crop: "Paddy (PB-1509)",
-    cropCategory: "Paddy",
-    quantity: "55 Qtl",
-    slot: "10:00 AM",
-    status: "Waiting",
-    moisture: "--",
-    grade: "Pending Gate Entry",
-    price: "₹ 2,183 / Qtl",
-    txHash: "0x12a9...88fe",
-  },
-  {
-    id: "#AGRI-8407",
-    farmer: "Jagdish Prasad",
-    phone: "+91 98284 31109",
-    village: "Sanganer, Jaipur",
-    crop: "Mustard (Pusa-31)",
-    cropCategory: "Mustard",
-    quantity: "40 Qtl",
-    slot: "10:15 AM",
-    status: "Gate Verified",
-    moisture: "7.9%",
-    grade: "High Oil Content (41%)",
-    price: "₹ 5,650 / Qtl",
-    txHash: "0x66a4...77bc",
-  },
-  {
-    id: "#AGRI-8408",
-    farmer: "Kamla Choudhary",
-    phone: "+91 94132 10982",
-    village: "Kotputli, Jaipur",
-    crop: "Wheat (Sharbati)",
-    cropCategory: "Wheat",
-    quantity: "70 Qtl",
-    slot: "10:30 AM",
-    status: "In Inspection",
-    moisture: "11.2%",
-    grade: "Grade A Premium",
-    price: "₹ 2,450 / Qtl",
-    txHash: "0x44fa...551e",
-  },
-  {
-    id: "#AGRI-8409",
-    farmer: "Devendra Yadav",
-    phone: "+91 95491 66203",
-    village: "Jamwa Ramgarh, Jaipur",
-    crop: "Bajra (HHB-67)",
-    cropCategory: "Bajra",
-    quantity: "50 Qtl",
-    slot: "10:45 AM",
-    status: "Paid",
-    moisture: "9.2%",
-    grade: "Clean FAQ",
-    price: "₹ 2,500 / Qtl",
-    txHash: "0x22be...440d",
-  },
-  {
-    id: "#AGRI-8410",
-    farmer: "Mukesh Gurjar",
-    phone: "+91 98293 88127",
-    village: "Shahpura, Jaipur",
-    crop: "Soybean (JS-335)",
-    cropCategory: "Soybean",
-    quantity: "65 Qtl",
-    slot: "11:00 AM",
-    status: "Waiting",
-    moisture: "--",
-    grade: "Pending Gate Entry",
-    price: "₹ 4,892 / Qtl",
-    txHash: "0x55bc...110a",
-  },
-];
-
-const THROUGHPUT_DATA = [
-  { time: "9 AM", value: 42, max: 200, isPeak: false },
-  { time: "10 AM", value: 78, max: 200, isPeak: false },
-  { time: "11 AM", value: 128, max: 200, isPeak: false },
-  { time: "12 PM", value: 162, max: 200, isPeak: false },
-  { time: "1 PM", value: 96, max: 200, isPeak: false },
-  { time: "2 PM", value: 68, max: 200, isPeak: false },
-  { time: "3 PM", value: 186, max: 200, isPeak: true },
-  { time: "4 PM", value: 142, max: 200, isPeak: false },
-  { time: "5 PM", value: 90, max: 200, isPeak: false },
-];
+import { useMandi } from "./MandiContext";
 
 const CROP_PRICES = {
   "Wheat (HD-2967)": "₹ 2,275 / Qtl",
@@ -163,9 +14,24 @@ const CROP_PRICES = {
   "Soybean (JS-335)": "₹ 4,892 / Qtl",
 };
 
+const BASE_ALL_CURVE = {
+  "9 AM": 42,
+  "10 AM": 78,
+  "11 AM": 128,
+  "12 PM": 162,
+  "1 PM": 96,
+  "2 PM": 68,
+  "3 PM": 186,
+  "4 PM": 142,
+  "5 PM": 90,
+};
+
+const HOURS_LIST = ["9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM"];
+
 function Dashboard() {
-  // Main state hooks
-  const [tokens, setTokens] = useState(INITIAL_TOKENS);
+  // Shared state from MandiContext (synced with ScanToken and across tabs)
+  const { tokens, addToken } = useMandi();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("All Tokens");
   const [secondsAgo, setSecondsAgo] = useState(2);
@@ -173,7 +39,7 @@ function Dashboard() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  // New Token Form state
+  // Form State for Token Issuance
   const [formData, setFormData] = useState({
     farmer: "",
     phone: "",
@@ -192,7 +58,6 @@ function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
-  // Filter options
   const filterOptions = [
     "All Tokens",
     "Waiting",
@@ -201,7 +66,7 @@ function Dashboard() {
     "Paid",
   ];
 
-  // Real-time dynamic filtering
+  // Real-time table filter based on status and search query
   const filteredTokens = tokens.filter((item) => {
     const matchesFilter =
       selectedFilter === "All Tokens" || item.status === selectedFilter;
@@ -219,12 +84,13 @@ function Dashboard() {
     return matchesFilter && matchesSearch;
   });
 
-  // Helper to count tokens by status
+  // Count helper
   const getCountByStatus = (status) => {
     if (status === "All Tokens") return tokens.length;
     return tokens.filter((t) => t.status === status).length;
   };
 
+  // Status CSS helper
   const getStatusClass = (status) => {
     switch (status) {
       case "Waiting":
@@ -240,7 +106,7 @@ function Dashboard() {
     }
   };
 
-  // Helper to generate next sequential token ID
+  // Generate next sequential token ID
   const getNextTokenId = () => {
     const numbers = tokens
       .map((t) => {
@@ -252,16 +118,62 @@ function Dashboard() {
     return `#AGRI-${maxNum + 1}`;
   };
 
-  // Handle New Token Creation
+  // =========================================================================
+  // Dynamic Calculation of Throughput Graph based on Selected Filter
+  // =========================================================================
+  const rawThroughputData = HOURS_LIST.map((hour) => {
+    if (selectedFilter === "All Tokens") {
+      const val = BASE_ALL_CURVE[hour] || 0;
+      return { time: hour, value: val, max: 200 };
+    }
+
+    // Calculate sum of quintals for tokens matching the active filter in this hour
+    const matchingInHour = tokens.filter(
+      (t) => t.status === selectedFilter && (t.hourSlot === hour || t.slot?.includes(hour.split(" ")[0]))
+    );
+    const quintals = matchingInHour.reduce(
+      (acc, t) => acc + (t.rawQuintals || parseInt(t.quantity, 10) || 50),
+      0
+    );
+
+    return {
+      time: hour,
+      value: quintals,
+      max: 120, // Scaled for subset view
+    };
+  });
+
+  // Find dynamic peak hour for current filter
+  const peakVal = Math.max(...rawThroughputData.map((d) => d.value));
+  const peakItem = rawThroughputData.find((d) => d.value === peakVal && d.value > 0);
+
+  const throughputData = rawThroughputData.map((d) => ({
+    ...d,
+    isPeak: peakItem ? d.time === peakItem.time : false,
+  }));
+
+  // Dynamic Total Quintals processed
+  const totalFilteredQuintals = rawThroughputData.reduce((acc, d) => acc + d.value, 0);
+
+  // Handle Token Form Submission
   const handleCreateToken = (e) => {
     e.preventDefault();
     if (!formData.farmer.trim()) {
-      alert("Please enter a farmer name.");
+      alert("Please enter farmer name.");
       return;
     }
 
     const nextId = getNextTokenId();
     const randomTx = `0x${Math.random().toString(16).substring(2, 6)}...${Math.random().toString(16).substring(2, 6)}`;
+    const qtlNum = parseInt(formData.quantity, 10) || 50;
+
+    const hourSlot = formData.slot.includes("11:")
+      ? "11 AM"
+      : formData.slot.includes("12:")
+      ? "12 PM"
+      : formData.slot.includes("02:")
+      ? "2 PM"
+      : "10 AM";
 
     const newToken = {
       id: nextId,
@@ -270,20 +182,21 @@ function Dashboard() {
       village: formData.village.trim() || "Jaipur District",
       crop: formData.crop,
       cropCategory: formData.crop.split(" ")[0],
-      quantity: `${formData.quantity} Qtl`,
+      quantity: `${qtlNum} Qtl`,
+      rawQuintals: qtlNum,
       slot: formData.slot,
+      hourSlot: hourSlot,
       status: formData.status,
       moisture: formData.status === "Waiting" ? "--" : "11.0%",
       grade: formData.status === "Waiting" ? "Pending Gate Entry" : "Queue for Inspection",
       price: CROP_PRICES[formData.crop] || "₹ 2,275 / Qtl",
       txHash: randomTx,
+      vehicle: "RJ-14-GA-" + Math.floor(1000 + Math.random() * 9000),
     };
 
-    // Prepend new token to queue
-    setTokens([newToken, ...tokens]);
+    addToken(newToken);
     setSecondsAgo(0);
 
-    // Reset and close modal
     setFormData({
       farmer: "",
       phone: "",
@@ -295,8 +208,7 @@ function Dashboard() {
     });
     setIsCreateModalOpen(false);
 
-    // Show toast
-    setToastMessage(`Token ${nextId} issued for ${newToken.farmer}!`);
+    setToastMessage(`Token ${nextId} created for ${newToken.farmer}!`);
     setTimeout(() => setToastMessage(""), 4000);
   };
 
@@ -337,7 +249,7 @@ function Dashboard() {
         </div>
       </header>
 
-      {/* KPI Cards Row (Dynamically calculated from tokens state) */}
+      {/* KPI Cards Row (Connected dynamically with MandiContext) */}
       <section className="kpi-grid">
         <div className="kpi-card">
           <div className="kpi-header">
@@ -418,30 +330,34 @@ function Dashboard() {
 
       {/* Main Operations Grid: Chart & Table */}
       <section className="operations-dashboard-grid">
-        {/* Left Column: Hourly Procurement Throughput Chart */}
+        {/* Left Column: Dynamically Recalculated Throughput Chart */}
         <div className="chart-panel">
           <div className="panel-header">
             <div>
               <h2 className="panel-title">Hourly Procurement Throughput</h2>
-              <p className="panel-subtitle">Quintals processed per hour</p>
+              <p className="panel-subtitle">
+                {selectedFilter === "All Tokens"
+                  ? "Quintals processed per hour"
+                  : `${selectedFilter} load: ${totalFilteredQuintals} Quintals`}
+              </p>
             </div>
             <div className="chart-legend-badge">
               <span className="legend-dot"></span>
-              Quintals
+              {selectedFilter === "All Tokens" ? "Quintals" : selectedFilter}
             </div>
           </div>
 
           <div className="chart-canvas-container">
             {/* Y-Axis Labels */}
             <div className="chart-y-axis">
-              <span>200</span>
-              <span>150</span>
-              <span>100</span>
-              <span>50</span>
+              <span>{selectedFilter === "All Tokens" ? "200" : "120"}</span>
+              <span>{selectedFilter === "All Tokens" ? "150" : "90"}</span>
+              <span>{selectedFilter === "All Tokens" ? "100" : "60"}</span>
+              <span>{selectedFilter === "All Tokens" ? "50" : "30"}</span>
               <span>0</span>
             </div>
 
-            {/* Plot Area with Dashed Gridlines & Vertical Bars */}
+            {/* Plot Area with Vertical Bars */}
             <div className="chart-plot-area">
               <div className="chart-gridlines">
                 <div className="gridline"></div>
@@ -452,19 +368,22 @@ function Dashboard() {
               </div>
 
               <div className="chart-bars-row">
-                {THROUGHPUT_DATA.map((item, index) => {
-                  const barHeightPct = (item.value / item.max) * 100;
+                {throughputData.map((item, index) => {
+                  const barHeightPct = item.max > 0 ? (item.value / item.max) * 100 : 0;
                   return (
                     <div
                       key={index}
                       className={`bar-column ${item.isPeak ? "peak-hour" : ""}`}
                     >
                       <div className="bar-tooltip">
-                        {item.time}: {item.value} Qtl {item.isPeak ? "⚡ Peak" : ""}
+                        {item.time}: {item.value} Qtl {item.isPeak ? "⚡ Peak" : ""} ({selectedFilter})
                       </div>
                       <div
                         className="bar-fill"
-                        style={{ height: `${barHeightPct}%` }}
+                        style={{
+                          height: `${Math.min(100, Math.max(item.value > 0 ? 4 : 0, barHeightPct))}%`,
+                          transition: "height 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                        }}
                       ></div>
                     </div>
                   );
@@ -473,7 +392,7 @@ function Dashboard() {
 
               {/* X-Axis Time Labels */}
               <div className="chart-x-labels">
-                {THROUGHPUT_DATA.map((item, index) => (
+                {throughputData.map((item, index) => (
                   <span key={index} className="x-label">
                     {index % 2 === 0 ? item.time : ""}
                   </span>
@@ -483,8 +402,12 @@ function Dashboard() {
           </div>
 
           <div className="chart-footer-stat">
-            <span>Peak Hour Throughput</span>
-            <span className="highlight-metric">3:00 PM · 186 Quintals</span>
+            <span>Peak Hour ({selectedFilter})</span>
+            <span className="highlight-metric">
+              {peakItem
+                ? `${peakItem.time} · ${peakItem.value} Quintals`
+                : "No active queue load"}
+            </span>
           </div>
         </div>
 
@@ -525,7 +448,7 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Interactive Filter Pills Bar with dynamic count indicators */}
+          {/* Interactive Filter Pills Bar */}
           <div className="filter-tabs-row">
             <span className="filter-icon-btn" title="Filter Queue by Status">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -611,7 +534,7 @@ function Dashboard() {
                         No procurement tokens found
                       </div>
                       <p style={{ fontSize: "13px", margin: "0 0 16px" }}>
-                        No entries match your search "{searchQuery}" or status filter "{selectedFilter}".
+                        No entries match "{searchQuery}" under "{selectedFilter}".
                       </p>
                       <button
                         className="btn-secondary"

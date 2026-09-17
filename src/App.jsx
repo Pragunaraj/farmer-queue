@@ -6,6 +6,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import ScanToken from "./pages/admin/ScanToken";
 import QualityEntry from "./pages/admin/QualityEntry";
 import Inventory from "./pages/admin/Inventory";
+import { MandiProvider } from "./pages/admin/MandiContext";
 
 function Home() {
   return (
@@ -66,20 +67,22 @@ function Login() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/book-slot" element={<SlotBooking />} />
-        <Route path="/queue" element={<Queue />} />
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/scan" element={<ScanToken />} />
-        <Route path="/admin/quality" element={<QualityEntry />} />
-        <Route path="/admin/inventory" element={<Inventory />} />
-      </Routes>
-    </BrowserRouter>
+    <MandiProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/book-slot" element={<SlotBooking />} />
+          <Route path="/queue" element={<Queue />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/scan" element={<ScanToken />} />
+          <Route path="/admin/quality" element={<QualityEntry />} />
+          <Route path="/admin/inventory" element={<Inventory />} />
+        </Routes>
+      </BrowserRouter>
+    </MandiProvider>
   );
 }
 
-export default App;
+export default App;
