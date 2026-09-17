@@ -2,10 +2,10 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 
 // Page Component Imports
-import Register from "./Register";
-import SlotBooking from "./SlotBooking";
-import Queue from "./Queue";
-import Status from "./Status";
+import Register from "./pages/farmer/Register";
+import SlotBooking from "./pages/farmer/SlotBooking";
+import Queue from "./pages/farmer/Queue";
+import Status from "./pages/farmer/Status";
 
 // Landing & Home Component
 function Home() {
