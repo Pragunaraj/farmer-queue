@@ -1,61 +1,8 @@
-.app {
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 50px;
-  background-color: #1f6f43;
-}
-
-.navbar h2 {
-  margin: 0;
-  color: white;
-}
-
-.nav-links {
-  display: flex;
-  gap: 25px;
-}
-
-.nav-links a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.nav-links a:hover {
-  text-decoration: underline;
-}
-
-.hero {
-  text-align: center;
-  padding: 100px 20px;
-}
-
-.hero h1 {
-  font-size: 40px;
-  margin-bottom: 20px;
-}
-
-.hero p {
-  font-size: 20px;
-  margin-bottom: 40px;
-}
-
-.buttons {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 button {
-  padding: 12px 24px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
   cursor: pointer;
 }
