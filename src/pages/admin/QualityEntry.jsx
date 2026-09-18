@@ -16,6 +16,10 @@ const GRADE_MULTIPLIERS = {
   "Grade C (Under-grade)": { multiplier: 0.88, badgeColor: "#dc2626", bg: "#fef2f2" },
 };
 
+function createTransactionHash() {
+  return `0x${Math.random().toString(16).substring(2, 6)}...${Math.random().toString(16).substring(2, 6)}`;
+}
+
 function QualityEntry() {
   const [selectedTokenId, setSelectedTokenId] = useState(ACTIVE_TOKENS[1].id); // Default to Bhanwar Singh
   const [weight, setWeight] = useState(80);
@@ -80,7 +84,7 @@ function QualityEntry() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const randomTx = `0x${Math.random().toString(16).substring(2, 6)}...${Math.random().toString(16).substring(2, 6)}`;
+    const randomTx = createTransactionHash();
     const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
     const newRecord = {

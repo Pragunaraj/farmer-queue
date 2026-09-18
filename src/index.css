@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 :root {
+  --border: #e5e4e7;
+  --text-h: #14231f;
+  --heading: Inter, ui-sans-serif, system-ui, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #14231f;
   background: #f5f8f7;
@@ -17,15 +21,14 @@ body {
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  text-align: left;
 }
 
 h1,
