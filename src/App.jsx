@@ -1,12 +1,7 @@
-import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import SlotBooking from "./SlotBooking";
 import Queue from "./Queue";
-import Dashboard from "./pages/admin/Dashboard";
-import ScanToken from "./pages/admin/ScanToken";
-import QualityEntry from "./pages/admin/QualityEntry";
-import Inventory from "./pages/admin/Inventory";
-import { MandiProvider } from "./pages/admin/MandiContext";
 
 function Home() {
   return (
@@ -19,10 +14,6 @@ function Home() {
           <Link to="/login">Farmer Login</Link>
           <Link to="/book-slot">Book Slot</Link>
           <Link to="/queue">Check Queue</Link>
-          <Link to="/admin/dashboard">Admin Dashboard</Link>
-          <Link to="/admin/scan">Scan Token</Link>
-          <Link to="/admin/quality">Quality Entry</Link>
-          <Link to="/admin/inventory">Inventory</Link>
         </div>
       </nav>
 
@@ -51,38 +42,27 @@ function Home() {
   );
 }
 
-function Login() {
-  return (
-    <div className="app">
-      <h1>Farmer Login</h1>
-
-      <p>Welcome! Please login to continue.</p>
-
-      <Link to="/">
-        <button>Back to Home</button>
-      </Link>
-    </div>
-  );
+function StepRoute({ step, children }) {
+  const { farmer, booking, paymentUnlocked } = useApp()
+  const unlocked = step === 'register' || (step === 'book' && farmer) || (step === 'queue' && farmer && booking) || (step === 'status' && farmer && booking && paymentUnlocked)
+  if (!unlocked) {
+    return <Navigate to={step === 'book' ? '/login' : step === 'queue' ? '/book-slot' : '/queue'} replace />
+  }
+  return children
 }
 
+// Main App Router
 function App() {
   return (
-    <MandiProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/book-slot" element={<SlotBooking />} />
-          <Route path="/queue" element={<Queue />} />
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/admin/scan" element={<ScanToken />} />
-          <Route path="/admin/quality" element={<QualityEntry />} />
-          <Route path="/admin/inventory" element={<Inventory />} />
-        </Routes>
-      </BrowserRouter>
-    </MandiProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/book-slot" element={<SlotBooking />} />
+        <Route path="/queue" element={<Queue />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
-export default App;
+export default App;
