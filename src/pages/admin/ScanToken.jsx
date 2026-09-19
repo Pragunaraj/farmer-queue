@@ -4,10 +4,20 @@ import AdminLayout from "./AdminLayout";
 import { useMandi } from "./MandiContext";
 import { useLanguage } from "../../context/LanguageContext";
 import LanguageSelector from "../../components/LanguageSelector";
+import LiveQueueTracker from "../../components/LiveQueueTracker";
 
 function ScanToken() {
   const { t } = useLanguage();
-  const { tokens, updateTokenStatus, stats, recordScan } = useMandi();
+  const {
+    tokens,
+    updateTokenStatus,
+    advanceTokenState,
+    getTokenEstimatedWait,
+    getTokensAhead,
+    QUEUE_STATUSES,
+    stats,
+    recordScan,
+  } = useMandi();
 
   const [activeTab, setActiveTab] = useState("camera"); // "camera" | "manual"
   const [isScanning, setIsScanning] = useState(false);
@@ -28,7 +38,12 @@ function ScanToken() {
   const animationFrameRef = useRef(null);
 
   // List of pending "Waiting" tokens
-  const waitingTokens = tokens.filter((t) => t.status === "Waiting");
+  const waitingTokens = tokens.filter(
+    (t) =>
+      t.status === (QUEUE_STATUSES?.GATE_WAITING || "GATE_WAITING") ||
+      t.status === "Waiting" ||
+      t.status === "Gate Verified"
+  );
 
   // =========================================================================
   // Audio Beep Feedback (Handheld Scanner Chime)
@@ -267,15 +282,24 @@ function ScanToken() {
     if (!scannedToken) return;
 
     const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const gateWaitingStatus = QUEUE_STATUSES?.GATE_WAITING || "GATE_WAITING";
+    const now = Date.now();
 
     // Update global shared state
-    updateTokenStatus(scannedToken.id, "Gate Verified", {
+    updateTokenStatus(scannedToken.id, gateWaitingStatus, {
       verifiedAt: timeStr,
+      arrivalTime: scannedToken.arrivalTime || now,
       bayAllocated: "Bay 2 (Weighbridge & Assay)",
     });
 
     // Increment approved stats
     recordScan(true);
+
+    setScannedToken((prev) => ({
+      ...prev,
+      status: gateWaitingStatus,
+      arrivalTime: prev.arrivalTime || now,
+    }));
 
     setCurrentStep(3);
     setToastMessage(`Gate Pass Issued for ${scannedToken.farmer} (${scannedToken.id})`);
@@ -360,6 +384,11 @@ function ScanToken() {
           </span>
         </div>
       </header>
+
+      {/* Real-time Telemetry & Queue Tracker Banner */}
+      <div style={{ marginBottom: "20px" }}>
+        <LiveQueueTracker compact={true} />
+      </div>
 
       {/* Main 2-Column Scanner Interface */}
       <div className="scanner-page-grid">
@@ -595,17 +624,17 @@ function ScanToken() {
                 </span>
                 <div className="quick-chips-row" style={{ marginTop: "8px" }}>
                   {waitingTokens.length > 0 ? (
-                    waitingTokens.slice(0, 5).map((t) => (
+                    waitingTokens.slice(0, 5).map((item) => (
                       <button
-                        key={t.id}
+                        key={item.id}
                         type="button"
                         className="quick-chip"
                         onClick={() => {
-                          setManualInput(t.id);
-                          handleManualVerify(t.id);
+                          setManualInput(item.id);
+                          handleManualVerify(item.id);
                         }}
                       >
-                        {t.id} ({t.farmer.split(" ")[0]})
+                        {item.id} ({item.farmer.split(" ")[0]}) · ~{getTokenEstimatedWait(item.id)}m
                       </button>
                     ))
                   ) : (
@@ -779,7 +808,7 @@ function ScanToken() {
                   <span style={{ fontWeight: 800, fontSize: "16px", color: "#0f172a" }}>
                     {scannedToken.id}
                   </span>
-                  <span className="status-pill status-waiting">
+                  <span className={`status-pill ${scannedToken.status === (QUEUE_STATUSES?.GATE_WAITING || "GATE_WAITING") ? "status-gate-waiting" : "status-waiting"}`}>
                     <span className="status-dot"></span>
                     {scannedToken.status}
                   </span>
@@ -793,6 +822,9 @@ function ScanToken() {
                 </div>
                 <div style={{ fontSize: "13px", color: "#334155" }}>
                   <strong>{t("thTruckCarrier")}:</strong> {scannedToken.vehicle || "RJ-14-GA-2194"}
+                </div>
+                <div style={{ fontSize: "12.5px", color: "#d97706", fontWeight: 600, background: "#fef3c7", padding: "6px 10px", borderRadius: "6px", border: "1px solid #fde68a" }}>
+                  ⏱️ {t("estWaitCol")}: ~{getTokenEstimatedWait(scannedToken.id)} {t("minsLabel")} ({getTokensAhead(scannedToken.id)} {t("tokensAheadLabel")})
                 </div>
                 <div style={{ fontSize: "12px", color: "#059669", fontWeight: 600 }}>
                   {t("govAadhaarVerified")}
@@ -836,17 +868,56 @@ function ScanToken() {
                 <h4 style={{ margin: "0 0 6px 0", fontSize: "16px", color: "#065f46" }}>
                   {t("gatePassIssuedText")}: #GP-{scannedToken.id.replace(/\D/g, "")}
                 </h4>
-                <p style={{ margin: "0 0 14px 0", fontSize: "13px", color: "#047857" }}>
+                <p style={{ margin: "0 0 10px 0", fontSize: "13px", color: "#047857" }}>
                   {scannedToken.farmer} {t("clearedForEntryText")}
                 </p>
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{ width: "100%", padding: "10px" }}
-                  onClick={handleResetScanner}
+
+                <div
+                  style={{
+                    background: "#ffffff",
+                    borderRadius: "8px",
+                    padding: "8px 12px",
+                    margin: "0 0 12px 0",
+                    border: "1px solid #d1fae5",
+                    fontSize: "12.5px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  {t("btnScanNextVehicle")}
-                </button>
+                  <span style={{ color: "#065f46", fontWeight: 600 }}>{t("estWaitCol")}:</span>
+                  <span style={{ color: "#d97706", fontWeight: 700 }}>
+                    ~{getTokenEstimatedWait(scannedToken.id)} {t("minsLabel")}
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  {scannedToken.status !== (QUEUE_STATUSES?.COMPLETED || "COMPLETED") && (
+                    <button
+                      type="button"
+                      className="btn-advance-queue btn-advance-inspect"
+                      style={{ width: "100%", justifyContent: "center" }}
+                      onClick={() => {
+                        advanceTokenState(scannedToken.id);
+                        setToastMessage(`${scannedToken.id} advanced to Inspection!`);
+                        setScannedToken((prev) => ({
+                          ...prev,
+                          status: QUEUE_STATUSES?.IN_INSPECTION || "IN_INSPECTION",
+                        }));
+                      }}
+                    >
+                      {t("btnStartInspection")}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ width: "100%", padding: "10px" }}
+                    onClick={handleResetScanner}
+                  >
+                    {t("btnScanNextVehicle")}
+                  </button>
+                </div>
               </div>
             )}
           </div>

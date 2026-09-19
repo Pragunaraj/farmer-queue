@@ -3,6 +3,7 @@ import AdminLayout from "./AdminLayout";
 import { useMandi } from "./MandiContext";
 import { useLanguage } from "../../context/LanguageContext";
 import LanguageSelector from "../../components/LanguageSelector";
+import LiveQueueTracker from "../../components/LiveQueueTracker";
 
 const CROP_PRICES = {
   "Wheat (HD-2967)": "₹ 2,275 / Qtl",
@@ -31,9 +32,9 @@ const BASE_ALL_CURVE = {
 const HOURS_LIST = ["9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM"];
 
 function Dashboard() {
-  // Shared state from MandiContext (synced with ScanToken and across tabs)
-  const { tokens, addToken } = useMandi();
-  const { t, language } = useLanguage();
+  // Shared state and telemetry from MandiContext
+  const { tokens, addToken, advanceTokenState, getTokenEstimatedWait, QUEUE_STATUSES } = useMandi();
+  const { t } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("All Tokens");
@@ -50,7 +51,7 @@ function Dashboard() {
     crop: "Wheat (HD-2967)",
     quantity: "50",
     slot: "11:15 AM",
-    status: "Waiting",
+    status: QUEUE_STATUSES ? QUEUE_STATUSES.GATE_WAITING : "GATE_WAITING",
   });
 
   // Live timer simulation
@@ -63,10 +64,10 @@ function Dashboard() {
 
   const filterOptions = [
     { key: "All Tokens", label: t("allTokens") },
-    { key: "Waiting", label: t("filterWaiting") },
-    { key: "Gate Verified", label: t("filterGateVerified") },
-    { key: "In Inspection", label: t("filterInInspection") },
-    { key: "Paid", label: t("filterPaid") },
+    { key: QUEUE_STATUSES?.GATE_WAITING || "GATE_WAITING", label: t("filterGateWaiting") },
+    { key: QUEUE_STATUSES?.IN_INSPECTION || "IN_INSPECTION", label: t("statusInInspection") },
+    { key: QUEUE_STATUSES?.WEIGHBRIDGE || "WEIGHBRIDGE", label: t("filterWeighbridge") },
+    { key: QUEUE_STATUSES?.COMPLETED || "COMPLETED", label: t("filterCompleted") },
   ];
 
   // Real-time table filter based on status and search query
@@ -96,14 +97,18 @@ function Dashboard() {
   // Status label translation helper
   const getStatusLabel = (status) => {
     switch (status) {
+      case "GATE_WAITING":
       case "Waiting":
-        return t("statusWaiting");
       case "Gate Verified":
-        return t("statusGateVerified");
+        return t("statusGateWaiting");
+      case "IN_INSPECTION":
       case "In Inspection":
         return t("statusInInspection");
+      case "WEIGHBRIDGE":
+        return t("statusWeighbridge");
+      case "COMPLETED":
       case "Paid":
-        return t("statusPaid");
+        return t("statusCompleted");
       default:
         return status;
     }
@@ -112,14 +117,18 @@ function Dashboard() {
   // Status CSS helper
   const getStatusClass = (status) => {
     switch (status) {
+      case "GATE_WAITING":
       case "Waiting":
-        return "status-waiting";
       case "Gate Verified":
-        return "status-gate-verified";
+        return "status-gate-waiting";
+      case "IN_INSPECTION":
       case "In Inspection":
         return "status-in-inspection";
+      case "WEIGHBRIDGE":
+        return "status-weighbridge";
+      case "COMPLETED":
       case "Paid":
-        return "status-paid";
+        return "status-completed";
       default:
         return "";
     }
@@ -194,6 +203,9 @@ function Dashboard() {
       ? "2 PM"
       : "10 AM";
 
+    const tokenStatus = formData.status || QUEUE_STATUSES.GATE_WAITING;
+    const now = Date.now();
+
     const newToken = {
       id: nextId,
       farmer: formData.farmer.trim(),
@@ -205,9 +217,12 @@ function Dashboard() {
       rawQuintals: qtlNum,
       slot: formData.slot,
       hourSlot: hourSlot,
-      status: formData.status,
-      moisture: formData.status === "Waiting" ? "--" : "11.0%",
-      grade: formData.status === "Waiting" ? "Pending Gate Entry" : "Queue for Inspection",
+      status: tokenStatus,
+      arrivalTime: now,
+      inspectionStartTime: tokenStatus === QUEUE_STATUSES.IN_INSPECTION ? now : null,
+      completedTime: tokenStatus === QUEUE_STATUSES.COMPLETED ? now : null,
+      moisture: tokenStatus === QUEUE_STATUSES.GATE_WAITING ? "--" : "11.0%",
+      grade: tokenStatus === QUEUE_STATUSES.GATE_WAITING ? "Pending Gate Entry" : "Queue for Inspection",
       price: CROP_PRICES[formData.crop] || "₹ 2,275 / Qtl",
       txHash: randomTx,
       vehicle: "RJ-14-GA-" + Math.floor(1000 + Math.random() * 9000),
@@ -223,7 +238,7 @@ function Dashboard() {
       crop: "Wheat (HD-2967)",
       quantity: "50",
       slot: "11:15 AM",
-      status: "Waiting",
+      status: QUEUE_STATUSES.GATE_WAITING,
     });
     setIsCreateModalOpen(false);
 
@@ -309,7 +324,7 @@ function Dashboard() {
           <p className="kpi-value">{tokens.length} {t("tokensCount")}</p>
           <div className="kpi-trend">
             <span>
-              {getCountByStatus("Waiting")} {t("waitingSub")} · {getCountByStatus("Gate Verified")} {t("gateSub")} · {getCountByStatus("In Inspection")} {t("inTestSub")}
+              {getCountByStatus(QUEUE_STATUSES?.GATE_WAITING || "GATE_WAITING")} {t("waitingSub")} · {getCountByStatus(QUEUE_STATUSES?.IN_INSPECTION || "IN_INSPECTION")} {t("inTestSub")} · {getCountByStatus(QUEUE_STATUSES?.WEIGHBRIDGE || "WEIGHBRIDGE")} {t("filterWeighbridge")}
             </span>
           </div>
         </div>
@@ -349,6 +364,9 @@ function Dashboard() {
           </div>
         </div>
       </section>
+
+      {/* Live Queue Detection & Telemetry Tracker Widget */}
+      <LiveQueueTracker />
 
       {/* Main Operations Grid: Chart & Table */}
       <section className="operations-dashboard-grid">
@@ -502,6 +520,7 @@ function Dashboard() {
                   <th>{t("thCrop")}</th>
                   <th>{t("thSlot")}</th>
                   <th>{t("thStatus")}</th>
+                  <th>{t("estWaitCol")}</th>
                   <th style={{ textAlign: "right" }}>{t("thAction")}</th>
                 </tr>
               </thead>
@@ -531,27 +550,107 @@ function Dashboard() {
                           {getStatusLabel(item.status)}
                         </span>
                       </td>
-                      <td style={{ textAlign: "right" }}>
-                        <button
-                          className="btn-action-icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedToken(item);
-                          }}
-                          title="View Token Telemetry"
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="1"></circle>
-                            <circle cx="19" cy="12" r="1"></circle>
-                            <circle cx="5" cy="12" r="1"></circle>
-                          </svg>
-                        </button>
+                      <td>
+                        {item.status === (QUEUE_STATUSES?.COMPLETED || "COMPLETED") ? (
+                          <span style={{ fontSize: "11.5px", color: "#10b981", fontWeight: 600 }}>0 {t("minsLabel")} (Done)</span>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: "12px",
+                              fontWeight: 700,
+                              color: getTokenEstimatedWait(item.id) > 20 ? "#d97706" : "#059669",
+                              fontFamily: "'JetBrains Mono', monospace",
+                            }}
+                          >
+                            ~{getTokenEstimatedWait(item.id)} {t("minsLabel")}
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                          {item.status === (QUEUE_STATUSES?.GATE_WAITING || "GATE_WAITING") && (
+                            <button
+                              type="button"
+                              className="btn-advance-queue btn-advance-inspect"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                advanceTokenState(item.id);
+                                setToastMessage(`${item.id} ➔ ${t("statusInInspection")}`);
+                                setTimeout(() => setToastMessage(""), 3500);
+                              }}
+                              title="Advance to Laboratory Inspection Bay"
+                            >
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                              </svg>
+                              {t("btnStartInspection")}
+                            </button>
+                          )}
+                          {item.status === (QUEUE_STATUSES?.IN_INSPECTION || "IN_INSPECTION") && (
+                            <button
+                              type="button"
+                              className="btn-advance-queue btn-advance-weigh"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                advanceTokenState(item.id);
+                                setToastMessage(`${item.id} ➔ ${t("statusWeighbridge")}`);
+                                setTimeout(() => setToastMessage(""), 3500);
+                              }}
+                              title="Advance to Weighbridge Bay"
+                            >
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 3v18"></path>
+                                <rect width="18" height="6" x="3" y="15" rx="2"></rect>
+                              </svg>
+                              {t("btnMoveWeighbridge")}
+                            </button>
+                          )}
+                          {item.status === (QUEUE_STATUSES?.WEIGHBRIDGE || "WEIGHBRIDGE") && (
+                            <button
+                              type="button"
+                              className="btn-advance-queue btn-advance-complete"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                advanceTokenState(item.id);
+                                setToastMessage(`${item.id} ➔ ${t("statusCompleted")}`);
+                                setTimeout(() => setToastMessage(""), 3500);
+                              }}
+                              title="Mark Procurement Completed"
+                            >
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                              {t("btnMarkCompleted")}
+                            </button>
+                          )}
+                          {item.status === (QUEUE_STATUSES?.COMPLETED || "COMPLETED") && (
+                            <span className="completed-done-pill">
+                              ✓ {t("statusCompleted")}
+                            </span>
+                          )}
+
+                          <button
+                            type="button"
+                            className="btn-action-icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedToken(item);
+                            }}
+                            title="View Token Telemetry"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="1"></circle>
+                              <circle cx="19" cy="12" r="1"></circle>
+                              <circle cx="5" cy="12" r="1"></circle>
+                            </svg>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-muted)" }}>
+                    <td colSpan="7" style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-muted)" }}>
                       <div style={{ marginBottom: "8px", fontWeight: 600, color: "var(--text-primary)" }}>
                         {t("noMatchingTokens")}
                       </div>
@@ -683,10 +782,10 @@ function Dashboard() {
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     >
-                      <option value="Waiting">{t("statusWaiting")} (Gate Entry Pending)</option>
-                      <option value="Gate Verified">{t("statusGateVerified")} (Arrived)</option>
-                      <option value="In Inspection">{t("statusInInspection")} (Lab Bay)</option>
-                      <option value="Paid">{t("statusPaid")} (Procured)</option>
+                      <option value={QUEUE_STATUSES.GATE_WAITING}>{t("statusGateWaiting")}</option>
+                      <option value={QUEUE_STATUSES.IN_INSPECTION}>{t("statusInInspection")}</option>
+                      <option value={QUEUE_STATUSES.WEIGHBRIDGE}>{t("statusWeighbridge")}</option>
+                      <option value={QUEUE_STATUSES.COMPLETED}>{t("statusCompleted")}</option>
                     </select>
                   </div>
                 </div>
@@ -751,6 +850,25 @@ function Dashboard() {
                   {selectedToken.slot}
                 </span>
               </div>
+              {selectedToken.arrivalTime && (
+                <div className="detail-row">
+                  <span className="detail-label">{t("timeHeader") || "Arrival Time"}:</span>
+                  <span className="detail-value" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                    {new Date(selectedToken.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              )}
+              {selectedToken.status !== QUEUE_STATUSES.COMPLETED && (
+                <div className="detail-row">
+                  <span className="detail-label">{t("estWaitCol")}:</span>
+                  <span className="detail-value" style={{ color: "#d97706", fontWeight: "600" }}>
+                    ~{getTokenEstimatedWait(selectedToken.id)} {t("minsLabel")}
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)", marginLeft: "6px" }}>
+                      ({getTokensAhead(selectedToken.id)} {t("tokensAheadLabel")})
+                    </span>
+                  </span>
+                </div>
+              )}
               <div className="detail-row">
                 <span className="detail-label">{t("labelMoisture")}:</span>
                 <span className="detail-value">{selectedToken.moisture}</span>
@@ -778,7 +896,37 @@ function Dashboard() {
               </div>
             </div>
 
-            <div className="modal-footer">
+            <div className="modal-footer" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                {selectedToken.status !== QUEUE_STATUSES.COMPLETED && (
+                  <button
+                    className={`btn-advance-queue ${
+                      selectedToken.status === QUEUE_STATUSES.GATE_WAITING
+                        ? "btn-advance-inspect"
+                        : selectedToken.status === QUEUE_STATUSES.IN_INSPECTION
+                        ? "btn-advance-weigh"
+                        : "btn-advance-complete"
+                    }`}
+                    onClick={() => {
+                      advanceTokenState(selectedToken.id);
+                      setSelectedToken((prev) => {
+                        if (!prev) return null;
+                        const nextStatus =
+                          prev.status === QUEUE_STATUSES.GATE_WAITING
+                            ? QUEUE_STATUSES.IN_INSPECTION
+                            : prev.status === QUEUE_STATUSES.IN_INSPECTION
+                            ? QUEUE_STATUSES.WEIGHBRIDGE
+                            : QUEUE_STATUSES.COMPLETED;
+                        return { ...prev, status: nextStatus };
+                      });
+                    }}
+                  >
+                    {selectedToken.status === QUEUE_STATUSES.GATE_WAITING && t("btnStartInspection")}
+                    {selectedToken.status === QUEUE_STATUSES.IN_INSPECTION && t("btnMoveWeighbridge")}
+                    {selectedToken.status === QUEUE_STATUSES.WEIGHBRIDGE && t("btnMarkCompleted")}
+                  </button>
+                )}
+              </div>
               <button
                 className="btn-secondary"
                 onClick={() => setSelectedToken(null)}
