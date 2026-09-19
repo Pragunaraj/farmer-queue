@@ -12,6 +12,7 @@ import ScanToken from './pages/admin/ScanToken'
 import QualityEntry from './pages/admin/QualityEntry'
 import Inventory from './pages/admin/Inventory'
 import { MandiProvider } from './pages/admin/MandiContext'
+import { LanguageProvider } from './context/LanguageContext'
 
 function Home() {
   return (
@@ -59,24 +60,26 @@ function StepRoute({ step, children }) {
 // Main App Router
 function App() {
   return (
-    <BrowserRouter>
-      <MandiProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<AdminHome />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/book-slot" element={<StepRoute step="book"><SlotBooking /></StepRoute>} />
-          <Route path="/queue" element={<StepRoute step="queue"><Queue /></StepRoute>} />
-          <Route path="/status" element={<StepRoute step="status"><Status /></StepRoute>} />
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/admin/scan" element={<ScanToken />} />
-          <Route path="/admin/quality" element={<QualityEntry />} />
-          <Route path="/admin/inventory" element={<Inventory />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </MandiProvider>
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <MandiProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<AdminHome />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/book-slot" element={<StepRoute step="book"><SlotBooking /></StepRoute>} />
+            <Route path="/queue" element={<StepRoute step="queue"><Queue /></StepRoute>} />
+            <Route path="/status" element={<StepRoute step="status"><Status /></StepRoute>} />
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/scan" element={<ScanToken />} />
+            <Route path="/admin/quality" element={<QualityEntry />} />
+            <Route path="/admin/inventory" element={<Inventory />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </MandiProvider>
+      </BrowserRouter>
+    </LanguageProvider>
   )
 }
 

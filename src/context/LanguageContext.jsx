@@ -52,7 +52,12 @@ export function LanguageProvider({ children }) {
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
+    return {
+      language: "ENG",
+      setLanguage: () => {},
+      t: (key) => TRANSLATIONS.ENG?.[key] || key,
+      supportedLanguages: SUPPORTED_LANGUAGES,
+    };
   }
   return context;
 }
