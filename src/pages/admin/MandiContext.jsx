@@ -244,6 +244,60 @@ function normalizeToken(token, index = 0) {
   };
 }
 
+export const INITIAL_VOICE_LOGS = [
+  {
+    id: "CALL-2026-9011",
+    timestamp: NOW - 18 * 60 * 1000,
+    duration: "1m 42s",
+    farmer: "Bhanwar Singh",
+    kisanId: "RJ-KISAN-9841",
+    crop: "Wheat (WH-1105)",
+    quantity: "80 Qtl",
+    slot: "20 Sept, 11am-2pm",
+    mandi: "Jaipur APMC Main Yard",
+    channel: "Voice AI (Kisan Vani)",
+    language: "Hindi (hi-IN)",
+    switches: 1,
+    status: "Confirmed & Pushed",
+    tokenId: "#AGRI-8404",
+    audioQuality: "100% Crisp",
+  },
+  {
+    id: "CALL-2026-9012",
+    timestamp: NOW - 42 * 60 * 1000,
+    duration: "2m 05s",
+    farmer: "Harpreet Singh",
+    kisanId: "PB-KISAN-2204",
+    crop: "Paddy (PB-1509)",
+    quantity: "60 Qtl",
+    slot: "21 Sept, 9am-11am",
+    mandi: "Jaipur APMC Yard 2",
+    channel: "Voice AI (Kisan Vani)",
+    language: "Punjabi (pa-IN)",
+    switches: 0,
+    status: "Confirmed & Pushed",
+    tokenId: "#AGRI-8406",
+    audioQuality: "98% Clean",
+  },
+  {
+    id: "CALL-2026-9013",
+    timestamp: NOW - 75 * 60 * 1000,
+    duration: "1m 15s",
+    farmer: "Shankarappa Gowda",
+    kisanId: "KA-KISAN-8712",
+    crop: "Cotton (Bt)",
+    quantity: "35 Qtl",
+    slot: "20 Sept, 2pm-5pm",
+    mandi: "Jaipur Central Silo",
+    channel: "Voice AI (Kisan Vani)",
+    language: "Kannada (kn-IN)",
+    switches: 1,
+    status: "Confirmed & Pushed",
+    tokenId: "#AGRI-8405",
+    audioQuality: "96% Clean",
+  },
+];
+
 export function MandiProvider({ children }) {
   const [tokens, setTokens] = useState(() => {
     try {
@@ -258,6 +312,19 @@ export function MandiProvider({ children }) {
     }
   });
 
+  const [voiceLogs, setVoiceLogs] = useState(() => {
+    try {
+      const saved = localStorage.getItem("agriflow_voice_logs");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : INITIAL_VOICE_LOGS;
+      }
+      return INITIAL_VOICE_LOGS;
+    } catch {
+      return INITIAL_VOICE_LOGS;
+    }
+  });
+
   const [stats, setStats] = useState(() => {
     try {
       const saved = localStorage.getItem("agriflow_scanner_stats");
@@ -266,6 +333,15 @@ export function MandiProvider({ children }) {
       return INITIAL_STATS;
     }
   });
+
+  // Sync voice logs to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("agriflow_voice_logs", JSON.stringify(voiceLogs));
+    } catch (e) {
+      console.error("Failed to save voice logs to localStorage", e);
+    }
+  }, [voiceLogs]);
 
   // Sync tokens to localStorage
   useEffect(() => {
@@ -449,11 +525,82 @@ export function MandiProvider({ children }) {
     }));
   }, []);
 
+  // Add a voice booking and generate token + audit log
+  const addVoiceBooking = useCallback((booking) => {
+    // Generate next sequential token ID
+    let maxNum = 8406;
+    tokens.forEach((t) => {
+      const match = t.id?.match(/\d+/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (!isNaN(num) && num > maxNum) maxNum = num;
+      }
+    });
+    const nextTokenId = `#AGRI-${maxNum + 1}`;
+    const callLogId = `CALL-2026-${Math.floor(9000 + Math.random() * 900)}`;
+
+    const cropName = booking.crop || "Wheat (HD-2967)";
+    const qtlVal = parseInt(booking.quantity, 10) || 45;
+    const now = Date.now();
+
+    const newToken = {
+      id: nextTokenId,
+      farmer: booking.farmer || "Farmer",
+      kisanId: booking.kisanId || `KISAN-${Math.floor(1000 + Math.random() * 9000)}`,
+      phone: booking.phone || "+91 98" + Math.floor(10000000 + Math.random() * 90000000),
+      village: booking.landmark || "APMC Vicinity",
+      crop: cropName,
+      cropCategory: cropName.split(" ")[0],
+      quantity: `${qtlVal} Qtl`,
+      rawQuintals: qtlVal,
+      slot: booking.slot || "11am-2pm",
+      hourSlot: booking.slot?.includes("9am") ? "10 AM" : booking.slot?.includes("2pm") ? "2 PM" : "12 PM",
+      status: QUEUE_STATUSES.GATE_WAITING,
+      channel: "Voice AI (Kisan Vani)",
+      mandi: booking.mandi || "Jaipur APMC Main Yard",
+      landmark: booking.landmark || "Mandi Toll Gate",
+      moisture: "--",
+      grade: "Queue for Inspection",
+      price: "₹ 2,275 / Qtl",
+      txHash: `0x${Math.random().toString(16).substring(2, 6)}...${Math.random().toString(16).substring(2, 6)}`,
+      vehicle: "RJ-14-GA-" + Math.floor(1000 + Math.random() * 9000),
+      arrivalTime: now,
+      inspectionStartTime: null,
+      completedTime: null,
+    };
+
+    const newLog = {
+      id: callLogId,
+      timestamp: now,
+      duration: booking.duration || "1m 30s",
+      farmer: newToken.farmer,
+      kisanId: newToken.kisanId,
+      crop: newToken.crop,
+      quantity: newToken.quantity,
+      slot: booking.preferredDate ? `${booking.preferredDate}, ${booking.slot}` : `20 Sept 2026, ${newToken.slot}`,
+      mandi: newToken.mandi,
+      channel: "Voice AI (Kisan Vani)",
+      language: booking.language || "Hindi (hi-IN)",
+      switches: booking.switches || 0,
+      status: "Confirmed & Pushed",
+      tokenId: nextTokenId,
+      audioQuality: "100% Crisp",
+      transcriptSummary: booking.transcriptSummary || `${newToken.farmer} booked ${newToken.quantity} ${newToken.crop} for ${newToken.slot}.`,
+    };
+
+    setTokens((prev) => [newToken, ...prev]);
+    setVoiceLogs((prev) => [newLog, ...prev]);
+
+    return { token: newToken, log: newLog };
+  }, [tokens]);
+
   return (
     <MandiContext.Provider
       value={{
         tokens,
         setTokens,
+        voiceLogs,
+        setVoiceLogs,
         stats,
         QUEUE_STATUSES,
         // Live Telemetry Metrics
@@ -469,6 +616,7 @@ export function MandiProvider({ children }) {
         advanceTokenState,
         updateTokenStatus,
         addToken,
+        addVoiceBooking,
         recordScan,
       }}
     >

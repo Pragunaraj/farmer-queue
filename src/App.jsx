@@ -11,6 +11,8 @@ import Dashboard from './pages/admin/Dashboard'
 import ScanToken from './pages/admin/ScanToken'
 import QualityEntry from './pages/admin/QualityEntry'
 import Inventory from './pages/admin/Inventory'
+import VoiceAssistant from './pages/admin/VoiceAssistant'
+import SystemLogs from './pages/admin/SystemLogs'
 import { MandiProvider } from './pages/admin/MandiContext'
 import { LanguageProvider } from './context/LanguageContext'
 
@@ -39,9 +41,11 @@ function AdminHome() {
         <div className="nav-links">
           <Link to="/">Farmer home</Link>
           <Link to="/admin/dashboard">Admin Dashboard</Link>
+          <Link to="/admin/voice">AI Voice Assistant</Link>
           <Link to="/admin/scan">Scan Token</Link>
           <Link to="/admin/quality">Quality Entry</Link>
           <Link to="/admin/inventory">Inventory</Link>
+          <Link to="/admin/logs">System Logs</Link>
         </div>
       </nav>
     </div>
@@ -72,9 +76,11 @@ function App() {
             <Route path="/queue" element={<StepRoute step="queue"><Queue /></StepRoute>} />
             <Route path="/status" element={<StepRoute step="status"><Status /></StepRoute>} />
             <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/voice" element={<VoiceAssistant />} />
             <Route path="/admin/scan" element={<ScanToken />} />
             <Route path="/admin/quality" element={<QualityEntry />} />
             <Route path="/admin/inventory" element={<Inventory />} />
+            <Route path="/admin/logs" element={<SystemLogs />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </MandiProvider>

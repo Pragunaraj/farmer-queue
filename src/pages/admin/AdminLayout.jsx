@@ -21,6 +21,18 @@ function AdminLayout({ children }) {
       ),
     },
     {
+      to: "/admin/voice",
+      title: t("aiVoiceAssistant"),
+      desc: t("aiVoiceAssistantDesc"),
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="22"></line>
+        </svg>
+      ),
+    },
+    {
       to: "/admin/scan",
       title: t("tokenScanner"),
       desc: t("tokenScannerDesc"),
@@ -55,6 +67,16 @@ function AdminLayout({ children }) {
           <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
           <path d="m3.3 7 8.7 5 8.7-5"></path>
           <path d="M12 22V12"></path>
+        </svg>
+      ),
+    },
+    {
+      to: "/admin/logs",
+      title: t("systemLogs"),
+      desc: t("systemLogsDesc"),
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
         </svg>
       ),
     },
