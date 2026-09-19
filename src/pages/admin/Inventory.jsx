@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AdminLayout from "./AdminLayout";
 import LanguageSelector from "../../components/LanguageSelector";
+import { useLanguage } from "../../context/LanguageContext";
 
 const INITIAL_FACILITIES = [
   {
@@ -54,6 +55,7 @@ const DESTINATIONS = [
 ];
 
 function Inventory() {
+  const { t } = useLanguage();
   const [facilities, setFacilities] = useState(INITIAL_FACILITIES);
   const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -158,9 +160,9 @@ function Inventory() {
     <AdminLayout>
       <header className="admin-topbar">
         <div className="page-intro">
-          <h1 className="text-dark-slate">Procurement Inventory & Silos</h1>
+          <h1 className="text-dark-slate">{t("inventoryPageTitle")}</h1>
           <p className="text-subtle-slate">
-            Live Mandi warehouse stocks, automated capacity meters, and outbound dispatch ledger.
+            {t("inventoryPageSubtitle")}
           </p>
         </div>
         <div className="topbar-actions">
@@ -174,7 +176,7 @@ function Inventory() {
               <path d="M5 12h14"></path>
               <path d="m12 5 7 7-7 7"></path>
             </svg>
-            Dispatch Batch
+            {t("btnDispatchBatch")}
           </button>
         </div>
       </header>
@@ -183,7 +185,7 @@ function Inventory() {
       <section className="kpi-grid">
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-label">Total Grain In Stock</span>
+            <span className="kpi-label">{t("kpiTotalGrainStock")}</span>
             <div className="kpi-icon-pill" style={{ background: "#ecfdf5", color: "#059669" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
@@ -192,13 +194,13 @@ function Inventory() {
           </div>
           <p className="kpi-value">{totalStored.toLocaleString()} Qtl</p>
           <div className="kpi-trend positive">
-            <span>Across 4 storage facilities</span>
+            <span>{t("kpiTotalGrainStockSub")}</span>
           </div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-label">Mandi Capacity</span>
+            <span className="kpi-label">{t("kpiMandiCapacity")}</span>
             <div className="kpi-icon-pill" style={{ background: "#eff6ff", color: "#2563eb" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="18" height="18" x="3" y="3" rx="2"></rect>
@@ -208,13 +210,13 @@ function Inventory() {
           </div>
           <p className="kpi-value">{totalCapacity.toLocaleString()} Qtl</p>
           <div className="kpi-trend">
-            <span>{totalFree.toLocaleString()} Qtl free buffer space</span>
+            <span>{totalFree.toLocaleString()} Qtl {t("kpiMandiCapacityFree")}</span>
           </div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-label">Storage Utilization</span>
+            <span className="kpi-label">{t("kpiStorageUtilization")}</span>
             <div className="kpi-icon-pill" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
@@ -223,13 +225,13 @@ function Inventory() {
           </div>
           <p className="kpi-value">{overallUtilizationPct}%</p>
           <div className="kpi-trend positive">
-            <span>Healthy operational headroom</span>
+            <span>{t("kpiStorageUtilizationSub")}</span>
           </div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-label">Stock Asset Value</span>
+            <span className="kpi-label">{t("kpiStockAssetValue")}</span>
             <div className="kpi-icon-pill" style={{ background: "#fffbeb", color: "#d97706" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -246,7 +248,7 @@ function Inventory() {
             Cr
           </p>
           <div className="kpi-trend positive">
-            <span>Government MSP Valuation</span>
+            <span>{t("kpiStockAssetValueSub")}</span>
           </div>
         </div>
       </section>
@@ -254,7 +256,7 @@ function Inventory() {
       {/* Live Storage Capacity Meters */}
       <section>
         <h2 className="text-dark-slate" style={{ fontSize: "18px", fontWeight: 700, margin: "0 0 14px 0" }}>
-          Live Silo & Warehouse Capacity Meters
+          {t("sectionSiloMeters")}
         </h2>
 
         <div className="capacity-meters-grid">
@@ -278,8 +280,8 @@ function Inventory() {
                 </div>
 
                 <div className="meter-stats">
-                  <span>{fac.current.toLocaleString()} Qtl filled</span>
-                  <span>{fac.capacity.toLocaleString()} Qtl capacity</span>
+                  <span>{fac.current.toLocaleString()} Qtl {t("meterFilled")}</span>
+                  <span>{fac.capacity.toLocaleString()} Qtl {t("meterCapacity")}</span>
                 </div>
               </div>
             );
@@ -291,9 +293,9 @@ function Inventory() {
       <div className="table-panel">
         <div className="table-panel-header">
           <div>
-            <h2 className="panel-title text-dark-slate">Mandi Commodity Stock Ledger</h2>
+            <h2 className="panel-title text-dark-slate">{t("sectionStockLedger")}</h2>
             <p className="panel-subtitle text-subtle-slate">
-              Active inventory breakdown by commodity variety, storage silo, and quality grade
+              {t("sectionStockLedgerSub")}
             </p>
           </div>
         </div>
@@ -302,14 +304,14 @@ function Inventory() {
           <table className="queue-table">
             <thead>
               <tr>
-                <th>Commodity & Variety</th>
-                <th>Storage Bay</th>
-                <th>Current Stock</th>
-                <th>Capacity</th>
-                <th>Fill Meter</th>
-                <th>Quality Grade</th>
-                <th>Asset Value</th>
-                <th style={{ textAlign: "right" }}>Action</th>
+                <th>{t("thCommodityVariety")}</th>
+                <th>{t("thStorageBay")}</th>
+                <th>{t("thCurrentStock")}</th>
+                <th>{t("thCapacity")}</th>
+                <th>{t("thFillMeter")}</th>
+                <th>{t("thQualityGrade")}</th>
+                <th>{t("thAssetValue")}</th>
+                <th style={{ textAlign: "right" }}>{t("thAction")}</th>
               </tr>
             </thead>
             <tbody>
@@ -350,7 +352,7 @@ function Inventory() {
                         style={{ padding: "6px 12px", fontSize: "12px" }}
                         onClick={() => handleOpenDispatch(fac.id)}
                       >
-                        Dispatch
+                        {t("btnDispatch")}
                       </button>
                     </td>
                   </tr>
@@ -365,9 +367,9 @@ function Inventory() {
       <div className="table-panel" style={{ marginTop: "24px" }}>
         <div className="table-panel-header">
           <div>
-            <h2 className="panel-title text-dark-slate">Outbound Dispatch Ledger</h2>
+            <h2 className="panel-title text-dark-slate">{t("sectionOutboundLedger")}</h2>
             <p className="panel-subtitle text-subtle-slate">
-              {dispatchLedger.length} shipments authorized and routed to state granaries & FCI depots
+              {dispatchLedger.length} {t("sectionOutboundLedgerSub")}
             </p>
           </div>
         </div>
@@ -376,13 +378,13 @@ function Inventory() {
           <table className="queue-table">
             <thead>
               <tr>
-                <th>Gate Pass #</th>
-                <th>Produce & Source</th>
-                <th>Quantity</th>
-                <th>Destination</th>
-                <th>Truck / Carrier</th>
-                <th>Dispatch Time</th>
-                <th>Transit Status</th>
+                <th>{t("thGatePass")}</th>
+                <th>{t("thProduceSource")}</th>
+                <th>{t("thQuantityQtl")}</th>
+                <th>{t("thDestination")}</th>
+                <th>{t("thTruckCarrier")}</th>
+                <th>{t("thDispatchTime")}</th>
+                <th>{t("thTransitStatus")}</th>
               </tr>
             </thead>
             <tbody>
@@ -406,7 +408,7 @@ function Inventory() {
                       }`}
                     >
                       <span className="status-dot"></span>
-                      {rec.status}
+                      {rec.status === "Delivered" ? t("statusDelivered") : t("statusInTransit")}
                     </span>
                   </td>
                 </tr>
@@ -423,9 +425,9 @@ function Inventory() {
             <form onSubmit={handleDispatchSubmit}>
               <div className="modal-header">
                 <div>
-                  <h3 className="modal-title text-dark-slate">Authorize Outbound Dispatch</h3>
+                  <h3 className="modal-title text-dark-slate">{t("modalDispatchTitle")}</h3>
                   <span style={{ fontSize: "12px", color: "#475569" }}>
-                    Generate transit gate pass & deduct storage batch
+                    {t("modalDispatchSub")}
                   </span>
                 </div>
                 <button
@@ -441,7 +443,7 @@ function Inventory() {
                 <div className="form-grid">
                   {/* Select Storage Silo */}
                   <div className="form-group full-width">
-                    <label className="form-label text-dark-slate">Source Silo / Commodity *</label>
+                    <label className="form-label text-dark-slate">{t("labelSourceSilo")}</label>
                     <select
                       className="form-select input-high-contrast"
                       value={dispatchForm.facilityId}
@@ -449,7 +451,7 @@ function Inventory() {
                     >
                       {facilities.map((fac) => (
                         <option key={fac.id} value={fac.id}>
-                          {fac.silo} — {fac.crop} (Available: {fac.current.toLocaleString()} Qtl)
+                          {fac.silo} — {fac.crop} ({t("labelMaxAvailable")}: {fac.current.toLocaleString()} Qtl)
                         </option>
                       ))}
                     </select>
@@ -458,8 +460,8 @@ function Inventory() {
                   {/* Quantity to Dispatch */}
                   <div className="form-group">
                     <label className="form-label text-dark-slate">
-                      Dispatch Quantity (Quintals) *{" "}
-                      <span style={{ color: "#059669" }}>(Max: {selectedFacility.current} Qtl)</span>
+                      {t("labelDispatchQty")}{" "}
+                      <span style={{ color: "#059669" }}>({t("labelMaxAvailable")}: {selectedFacility.current} Qtl)</span>
                     </label>
                     <input
                       type="number"
@@ -474,7 +476,7 @@ function Inventory() {
 
                   {/* Destination Depot */}
                   <div className="form-group">
-                    <label className="form-label text-dark-slate">Destination Facility *</label>
+                    <label className="form-label text-dark-slate">{t("labelDestFacility")}</label>
                     <select
                       className="form-select input-high-contrast"
                       value={dispatchForm.destination}
@@ -490,7 +492,7 @@ function Inventory() {
 
                   {/* Transport Truck Number */}
                   <div className="form-group">
-                    <label className="form-label text-dark-slate">Authorized Carrier Truck # *</label>
+                    <label className="form-label text-dark-slate">{t("labelCarrierTruck")}</label>
                     <input
                       type="text"
                       className="form-input input-high-contrast"
@@ -503,7 +505,7 @@ function Inventory() {
 
                   {/* Driver Name & Phone */}
                   <div className="form-group">
-                    <label className="form-label text-dark-slate">Driver Name & Contact</label>
+                    <label className="form-label text-dark-slate">{t("labelDriverInfo")}</label>
                     <input
                       type="text"
                       className="form-input input-high-contrast"
@@ -521,10 +523,10 @@ function Inventory() {
                   className="btn-secondary"
                   onClick={() => setIsDispatchModalOpen(false)}
                 >
-                  Cancel
+                  {t("btnCancel")}
                 </button>
                 <button type="submit" className="btn-primary">
-                  Sign Gate Pass & Dispatch
+                  {t("btnSignDispatch")}
                 </button>
               </div>
             </form>

@@ -556,7 +556,7 @@ function Dashboard() {
                         {t("noMatchingTokens")}
                       </div>
                       <p style={{ fontSize: "13px", margin: "0 0 16px" }}>
-                        No entries match "{searchQuery}".
+                        {t("noEntriesMatch")} "{searchQuery}".
                       </p>
                       <button
                         className="btn-secondary"
@@ -565,7 +565,7 @@ function Dashboard() {
                           setSelectedFilter("All Tokens");
                         }}
                       >
-                        Reset Filters
+                        {t("btnReset")}
                       </button>
                     </td>
                   </tr>

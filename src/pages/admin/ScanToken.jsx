@@ -6,6 +6,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import LanguageSelector from "../../components/LanguageSelector";
 
 function ScanToken() {
+  const { t } = useLanguage();
   const { tokens, updateTokenStatus, stats, recordScan } = useMandi();
 
   const [activeTab, setActiveTab] = useState("camera"); // "camera" | "manual"
@@ -330,10 +331,10 @@ function ScanToken() {
           </div>
           <div>
             <h1 className="text-dark-slate" style={{ fontSize: "22px", fontWeight: 700, margin: 0 }}>
-              Gate Verification Scanner
+              {t("scannerPageTitle")}
             </h1>
             <p className="text-subtle-slate" style={{ fontSize: "13.5px", margin: "3px 0 0 0" }}>
-              Strict optical QR parsing on live camera feed. Only verified farmer tokens admitted.
+              {t("scannerPageSubtitle")}
             </p>
           </div>
         </div>
@@ -351,11 +352,11 @@ function ScanToken() {
               <rect width="5" height="5" x="16" y="3" rx="1"></rect>
               <rect width="5" height="5" x="3" y="16" rx="1"></rect>
             </svg>
-            Show Sample QR
+            {t("btnShowSampleQr")}
           </button>
           <span className="mandi-badge text-dark-slate">
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
-            Gate #01 · Optical Ready
+            {t("gateOpticalReady")}
           </span>
         </div>
       </header>
@@ -378,7 +379,7 @@ function ScanToken() {
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                 <circle cx="12" cy="13" r="4"></circle>
               </svg>
-              Camera Scan
+              {t("tabCameraScan")}
             </button>
 
             <button
@@ -396,7 +397,7 @@ function ScanToken() {
                 <line x1="14" y1="10" x2="14" y2="10"></line>
                 <line x1="18" y1="10" x2="18" y2="10"></line>
               </svg>
-              Manual Entry
+              {t("tabManualEntry")}
             </button>
           </div>
 
@@ -417,7 +418,7 @@ function ScanToken() {
               {cameraStatus === "active" && (
                 <div className="camera-badge-live">
                   <span className="live-dot"></span>
-                  {isScanning ? "PARSING FRAMES" : "LIVE WEBCAM"}
+                  {isScanning ? t("badgeParsingFrames") : t("badgeLiveWebcam")}
                 </div>
               )}
 
@@ -454,10 +455,10 @@ function ScanToken() {
                         </svg>
                       </div>
                       <p className="camera-title-text" style={{ color: "#ffffff", fontWeight: 700 }}>
-                        Searching for valid farmer QR code...
+                        {t("searchQrTitle")}
                       </p>
                       <p className="camera-sub-text" style={{ color: "#a7f3d0", fontSize: "12px" }}>
-                        Hold phone screen or appointment pass within green brackets
+                        {t("searchQrSub")}
                       </p>
                     </>
                   ) : currentStep > 1 && scannedToken ? (
@@ -484,8 +485,8 @@ function ScanToken() {
                           <path d="M12 7v3a2 2 0 0 1-2 2H7"></path>
                         </svg>
                       </div>
-                      <p className="camera-title-text">Position QR code within frame</p>
-                      <p className="camera-sub-text">Click "Start Scan" to activate QR recognition</p>
+                      <p className="camera-title-text">{t("posQrTitle")}</p>
+                      <p className="camera-sub-text">{t("posQrSub")}</p>
                     </>
                   )}
                 </div>
@@ -504,8 +505,8 @@ function ScanToken() {
                       animation: "spin 1s infinite linear",
                     }}
                   ></div>
-                  <p className="camera-title-text">Connecting to laptop webcam...</p>
-                  <p className="camera-sub-text">Please allow camera permissions in your browser</p>
+                  <p className="camera-title-text">{t("connectingWebcam")}</p>
+                  <p className="camera-sub-text">{t("allowCameraPerm")}</p>
                 </div>
               )}
 
@@ -532,7 +533,7 @@ function ScanToken() {
                       style={{ flex: 1, padding: "8px 12px", fontSize: "12.5px" }}
                       onClick={() => setActiveTab("manual")}
                     >
-                      Switch to Manual Entry
+                      {t("btnSwitchManual")}
                     </button>
                     <button
                       type="button"
@@ -540,7 +541,7 @@ function ScanToken() {
                       style={{ padding: "8px 12px", fontSize: "12.5px", background: "transparent", color: "#ffffff", borderColor: "#475569" }}
                       onClick={startCamera}
                     >
-                      Retry Camera
+                      {t("btnRetryCamera")}
                     </button>
                   </div>
                 </div>
@@ -562,10 +563,10 @@ function ScanToken() {
               }}
             >
               <h3 className="text-dark-slate" style={{ fontSize: "17px", fontWeight: 700, margin: "0 0 8px 0" }}>
-                Manual Entry Override
+                {t("manualEntryTitle")}
               </h3>
               <p className="text-subtle-slate" style={{ fontSize: "13px", margin: "0 0 20px 0" }}>
-                Use manual entry when the farmer's screen is cracked, dimmed, or in direct harsh sunlight.
+                {t("manualEntrySub")}
               </p>
 
               <form
@@ -578,19 +579,19 @@ function ScanToken() {
                 <input
                   type="text"
                   className="form-input input-high-contrast"
-                  placeholder="e.g. #AGRI-8402"
+                  placeholder={t("placeholderTokenSearch")}
                   value={manualInput}
                   onChange={(e) => setManualInput(e.target.value)}
                   style={{ fontSize: "15px", padding: "12px 16px" }}
                 />
                 <button type="submit" className="btn-primary" style={{ padding: "12px 20px" }}>
-                  Verify Token
+                  {t("btnVerifyToken")}
                 </button>
               </form>
 
               <div>
                 <span style={{ fontSize: "11.5px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
-                  Scheduled Arrival Queue:
+                  {t("scheduledArrivalQueue")}
                 </span>
                 <div className="quick-chips-row" style={{ marginTop: "8px" }}>
                   {waitingTokens.length > 0 ? (
@@ -609,7 +610,7 @@ function ScanToken() {
                     ))
                   ) : (
                     <span style={{ fontSize: "12px", color: "#10b981", fontWeight: 600 }}>
-                      All current queue tokens gate verified!
+                      {t("allTokensVerified")}
                     </span>
                   )}
                 </div>
@@ -639,7 +640,7 @@ function ScanToken() {
                   </>
                 )}
               </svg>
-              {isScanning ? "Stop Scanning" : "Start Scan"}
+              {isScanning ? t("btnStopScan") : t("btnStartScan")}
             </button>
           )}
 
@@ -685,7 +686,7 @@ function ScanToken() {
         <div className="scanner-right-panel">
           {/* Card 1: Gate Verification Process Stepper */}
           <div className="stepper-process-card">
-            <h3 className="stepper-header-title">Gate Verification Process</h3>
+            <h3 className="stepper-header-title">{t("processTitle")}</h3>
 
             <div className="stepper-list">
               {/* Step 1: Scan QR / Enter Token */}
@@ -705,14 +706,14 @@ function ScanToken() {
                       <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
                       <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
                     </svg>
-                    Scan QR / Enter Token
+                    {t("step1Title")}
                   </div>
                   <p className="step-desc-text">
                     {isScanning
-                      ? "Real-time jsQR optical frame inspection active"
+                      ? t("step1DescScanning")
                       : cameraStatus === "active"
-                      ? "Webcam ready — click Start Scan"
-                      : "Camera scan or manual entry"}
+                      ? t("step1DescCameraActive")
+                      : t("step1DescDefault")}
                   </p>
                 </div>
               </div>
@@ -732,9 +733,9 @@ function ScanToken() {
                       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
                       <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    Review Farmer Profile
+                    {t("step2Title")}
                   </div>
-                  <p className="step-desc-text">Verify identity, land records & slot</p>
+                  <p className="step-desc-text">{t("step2Desc")}</p>
                 </div>
               </div>
 
@@ -752,9 +753,9 @@ function ScanToken() {
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
-                    Approve Gate Entry
+                    {t("step3Title")}
                   </div>
-                  <p className="step-desc-text">Issue gate pass for procurement queue</p>
+                  <p className="step-desc-text">{t("step3Desc")}</p>
                 </div>
               </div>
             </div>
@@ -785,16 +786,16 @@ function ScanToken() {
                 </div>
 
                 <div style={{ fontSize: "13px", color: "#334155" }}>
-                  <strong>Farmer:</strong> {scannedToken.farmer} ({scannedToken.phone})
+                  <strong>{t("labelFarmer")}:</strong> {scannedToken.farmer} ({scannedToken.phone})
                 </div>
                 <div style={{ fontSize: "13px", color: "#334155" }}>
-                  <strong>Produce:</strong> {scannedToken.crop} · <strong>Batch:</strong> {scannedToken.quantity}
+                  <strong>{t("labelCommodity")}:</strong> {scannedToken.crop} · <strong>{t("labelQuantityQtl")}:</strong> {scannedToken.quantity}
                 </div>
                 <div style={{ fontSize: "13px", color: "#334155" }}>
-                  <strong>Vehicle:</strong> {scannedToken.vehicle || "RJ-14-GA-2194"}
+                  <strong>{t("thTruckCarrier")}:</strong> {scannedToken.vehicle || "RJ-14-GA-2194"}
                 </div>
                 <div style={{ fontSize: "12px", color: "#059669", fontWeight: 600 }}>
-                  ✓ Land Records & Aadhaar Verified (Govt Portal Sync)
+                  {t("govAadhaarVerified")}
                 </div>
 
                 <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
@@ -804,7 +805,7 @@ function ScanToken() {
                     style={{ flex: 1, padding: "10px" }}
                     onClick={handleApproveEntry}
                   >
-                    Approve Gate Entry
+                    {t("btnApproveEntry")}
                   </button>
                   <button
                     type="button"
@@ -812,7 +813,7 @@ function ScanToken() {
                     style={{ padding: "10px 14px", color: "#dc2626", borderColor: "#fecaca" }}
                     onClick={handleRejectEntry}
                   >
-                    Reject
+                    {t("btnReject")}
                   </button>
                 </div>
               </div>
@@ -833,10 +834,10 @@ function ScanToken() {
               >
                 <div style={{ color: "#059669", fontSize: "24px", marginBottom: "4px" }}>✓</div>
                 <h4 style={{ margin: "0 0 6px 0", fontSize: "16px", color: "#065f46" }}>
-                  Gate Pass Issued: #GP-{scannedToken.id.replace(/\D/g, "")}
+                  {t("gatePassIssuedText")}: #GP-{scannedToken.id.replace(/\D/g, "")}
                 </h4>
                 <p style={{ margin: "0 0 14px 0", fontSize: "13px", color: "#047857" }}>
-                  {scannedToken.farmer} cleared for entry · Directed to Weighbridge Bay 2.
+                  {scannedToken.farmer} {t("clearedForEntryText")}
                 </p>
                 <button
                   type="button"
@@ -844,7 +845,7 @@ function ScanToken() {
                   style={{ width: "100%", padding: "10px" }}
                   onClick={handleResetScanner}
                 >
-                  Scan Next Vehicle
+                  {t("btnScanNextVehicle")}
                 </button>
               </div>
             )}
@@ -859,9 +860,9 @@ function ScanToken() {
               </svg>
             </div>
             <div>
-              <h4 className="tamper-proof-title">Tamper-Proof Verification</h4>
+              <h4 className="tamper-proof-title">{t("tamperProofTitle")}</h4>
               <p className="tamper-proof-body">
-                Each gate entry is logged on the blockchain ledger with timestamp, GPS coordinates, and officer signature hash. All records are immutable and auditable.
+                {t("tamperProofBody")}
               </p>
             </div>
           </div>
@@ -870,21 +871,21 @@ function ScanToken() {
           <div className="scanner-stats-row">
             <div className="scanner-stat-card">
               <p className="scanner-stat-num text-dark-slate">{stats.scannedToday}</p>
-              <p className="scanner-stat-label">Scanned Today</p>
+              <p className="scanner-stat-label">{t("statScannedToday")}</p>
             </div>
 
             <div className="scanner-stat-card">
               <p className="scanner-stat-num" style={{ color: "#059669" }}>
                 {stats.approved}
               </p>
-              <p className="scanner-stat-label">Approved</p>
+              <p className="scanner-stat-label">{t("statApproved")}</p>
             </div>
 
             <div className="scanner-stat-card">
               <p className="scanner-stat-num" style={{ color: "#dc2626" }}>
                 {stats.rejected}
               </p>
-              <p className="scanner-stat-label">Rejected</p>
+              <p className="scanner-stat-label">{t("statRejected")}</p>
             </div>
           </div>
         </div>
@@ -896,9 +897,9 @@ function ScanToken() {
           <div className="modal-dialog" style={{ maxWidth: 440 }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
-                <h3 className="modal-title">Sample Farmer QR Code</h3>
+                <h3 className="modal-title">{t("modalSampleQrTitle")}</h3>
                 <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                  Point your camera or phone screen at this QR code to test
+                  {t("modalSampleQrSub")}
                 </span>
               </div>
               <button
@@ -936,7 +937,7 @@ function ScanToken() {
                   Rameshwar Lal · Wheat (HD-2967) · 45 Qtl
                 </p>
                 <p style={{ margin: "8px 0 0 0", fontSize: "11.5px", color: "#64748b" }}>
-                  You can display this on your phone screen to hold in front of your laptop webcam!
+                  {t("sampleQrInstruction")}
                 </p>
               </div>
             </div>
@@ -947,7 +948,7 @@ function ScanToken() {
                 className="btn-primary"
                 onClick={() => setIsSampleQrModalOpen(false)}
               >
-                Done
+                {t("btnDone")}
               </button>
             </div>
           </div>

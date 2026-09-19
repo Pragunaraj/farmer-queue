@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AdminLayout from "./AdminLayout";
 import LanguageSelector from "../../components/LanguageSelector";
+import { useLanguage } from "../../context/LanguageContext";
 
 const ACTIVE_TOKENS = [
   { id: "#AGRI-8403", farmer: "Sunita Devi", crop: "Paddy (PR-114)", basePrice: 2183, weight: 60, moisture: 11.2 },
@@ -22,6 +23,7 @@ function createTransactionHash() {
 }
 
 function QualityEntry() {
+  const { t } = useLanguage();
   const [selectedTokenId, setSelectedTokenId] = useState(ACTIVE_TOKENS[1].id); // Default to Bhanwar Singh
   const [weight, setWeight] = useState(80);
   const [moisture, setMoisture] = useState(10.8);
@@ -110,16 +112,16 @@ function QualityEntry() {
     <AdminLayout>
       <header className="admin-topbar">
         <div className="page-intro">
-          <h1 className="text-dark-slate">Quality Inspection & Assay</h1>
+          <h1 className="text-dark-slate">{t("qualityPageTitle")}</h1>
           <p className="text-subtle-slate">
-            Laboratory moisture measurement, FAQ grading, and automatic MSP payout calculation.
+            {t("qualityPageSubtitle")}
           </p>
         </div>
         <div className="topbar-actions">
           <LanguageSelector />
           <span className="mandi-badge text-dark-slate">
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
-            Laboratory Bay #02 Active
+            {t("qualityBayActive")}
           </span>
         </div>
       </header>
@@ -130,10 +132,10 @@ function QualityEntry() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
             <div>
               <h2 className="text-dark-slate" style={{ fontSize: "19px", fontWeight: 700, margin: 0 }}>
-                Produce Assay Record Entry
+                {t("sectionAssayEntry")}
               </h2>
               <p className="text-subtle-slate" style={{ fontSize: "13.5px", margin: "4px 0 0" }}>
-                Select an enqueued farmer batch to verify laboratory readings.
+                {t("sectionAssayEntrySub")}
               </p>
             </div>
             <span
@@ -147,14 +149,14 @@ function QualityEntry() {
                 fontFamily: "'JetBrains Mono', monospace",
               }}
             >
-              Base MSP: ₹ {currentToken.basePrice} / Qtl
+              {t("baseMspLabel")}: ₹ {currentToken.basePrice} / Qtl
             </span>
           </div>
 
           <div className="form-grid" style={{ marginBottom: "20px" }}>
             {/* Token Selector */}
             <div className="form-group full-width">
-              <label className="form-label text-dark-slate">Select Verified Farmer Token *</label>
+              <label className="form-label text-dark-slate">{t("labelSelectToken")}</label>
               <select
                 className="form-select input-high-contrast"
                 style={{ fontSize: "14px", fontWeight: 600 }}
@@ -171,7 +173,7 @@ function QualityEntry() {
 
             {/* Batch Weight */}
             <div className="form-group">
-              <label className="form-label text-dark-slate">Weighbridge Net Weight (Quintals) *</label>
+              <label className="form-label text-dark-slate">{t("labelNetWeight")}</label>
               <input
                 type="number"
                 step="0.5"
@@ -186,9 +188,9 @@ function QualityEntry() {
             {/* Moisture % */}
             <div className="form-group">
               <label className="form-label text-dark-slate">
-                Moisture Meter Reading (%) *{" "}
+                {t("labelMoistureReading")}{" "}
                 <span style={{ color: moisture <= 12 ? "#059669" : "#d97706", fontWeight: 600 }}>
-                  ({moisture <= 12 ? "Optimal Standard" : moisture <= 14 ? "2% Dockage" : "5% High Moisture Dockage"})
+                  ({moisture <= 12 ? t("optMoistureStandard") : moisture <= 14 ? t("dockMoisture2") : t("dockMoisture5")})
                 </span>
               </label>
               <input
@@ -205,7 +207,7 @@ function QualityEntry() {
 
             {/* Quality Grade */}
             <div className="form-group">
-              <label className="form-label text-dark-slate">Certified Quality Grade *</label>
+              <label className="form-label text-dark-slate">{t("labelCertifiedGrade")}</label>
               <select
                 className="form-select input-high-contrast"
                 value={grade}
@@ -219,7 +221,7 @@ function QualityEntry() {
 
             {/* Foreign Matter Admixture % */}
             <div className="form-group">
-              <label className="form-label text-dark-slate">Foreign Matter / Inert Material (%)</label>
+              <label className="form-label text-dark-slate">{t("labelForeignMatter")}</label>
               <input
                 type="number"
                 step="0.05"
@@ -233,13 +235,13 @@ function QualityEntry() {
 
             {/* Inspector Notes */}
             <div className="form-group full-width">
-              <label className="form-label text-dark-slate">Inspector Remarks & Visual Assessment</label>
+              <label className="form-label text-dark-slate">{t("labelInspectorRemarks")}</label>
               <input
                 type="text"
                 className="form-input input-high-contrast"
                 value={inspectorNotes}
                 onChange={(e) => setInspectorNotes(e.target.value)}
-                placeholder="Physical grain texture, luster, absence of pest damage"
+                placeholder={t("placeholderInspector")}
               />
             </div>
           </div>
@@ -248,7 +250,7 @@ function QualityEntry() {
           <div className="payout-calculation-card">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a" }}>
-                Dynamic MSP Settlement Computation
+                {t("sectionSettlementCompute")}
               </span>
               <span
                 style={{
@@ -265,37 +267,37 @@ function QualityEntry() {
             </div>
 
             <div className="payout-row">
-              <span>Selected Produce:</span>
+              <span>{t("calcSelectedProduce")}</span>
               <span className="text-dark-slate" style={{ fontWeight: 600 }}>
                 {currentToken.crop} ({currentToken.farmer})
               </span>
             </div>
 
             <div className="payout-row">
-              <span>Govt Official Base MSP:</span>
+              <span>{t("calcOfficialMsp")}</span>
               <span className="text-dark-slate" style={{ fontWeight: 600 }}>
                 ₹ {currentToken.basePrice.toLocaleString()} / Quintal
               </span>
             </div>
 
             <div className="payout-row">
-              <span>Grade Adjustment & Moisture Dockage:</span>
+              <span>{t("calcGradeDockage")}</span>
               <span style={{ color: effectiveMultiplier < 1 ? "#dc2626" : "#059669", fontWeight: 600 }}>
-                {Math.round(effectiveMultiplier * 100)}% of Base Rate (
-                {moistureDockage > 0 ? `-${Math.round(moistureDockage * 100)}% moisture` : "No moisture penalty"}
+                {Math.round(effectiveMultiplier * 100)}% {t("calcOfBaseRate")} (
+                {moistureDockage > 0 ? `-${Math.round(moistureDockage * 100)}% ${t("calcMoisturePenalty")}` : t("calcNoMoisturePenalty")}
                 )
               </span>
             </div>
 
             <div className="payout-row">
-              <span>Final Certified Rate:</span>
+              <span>{t("calcFinalRate")}</span>
               <span className="text-dark-slate" style={{ fontWeight: 700 }}>
                 ₹ {netRatePerQtl.toLocaleString()} / Quintal
               </span>
             </div>
 
             <div className="payout-row total-row">
-              <span>Total Farmer Disbursement ({weight} Quintals):</span>
+              <span>{t("calcTotalDisbursement")} ({weight} {t("quintalsPill")}):</span>
               <span className="payout-grand-total">₹ {totalPayout.toLocaleString()}</span>
             </div>
           </div>
@@ -310,7 +312,7 @@ function QualityEntry() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
-              Submit Quality Record & Sign Escrow
+              {t("btnSubmitQuality")}
             </button>
           </div>
         </form>
@@ -320,9 +322,9 @@ function QualityEntry() {
       <div className="table-panel" style={{ marginTop: "24px" }}>
         <div className="table-panel-header">
           <div>
-            <h2 className="panel-title text-dark-slate">Today's Quality Inspection Ledger</h2>
+            <h2 className="panel-title text-dark-slate">{t("sectionQualityHistory")}</h2>
             <p className="panel-subtitle text-subtle-slate">
-              {qualityHistory.length} batches graded and approved for blockchain payment
+              {qualityHistory.length} {t("sectionQualityHistorySub")}
             </p>
           </div>
         </div>
@@ -331,14 +333,14 @@ function QualityEntry() {
           <table className="queue-table">
             <thead>
               <tr>
-                <th>Token #</th>
-                <th>Farmer</th>
-                <th>Crop & Batch</th>
-                <th>Moisture</th>
-                <th>Assigned Grade</th>
-                <th>Net Rate</th>
-                <th>Total Payout</th>
-                <th>Time & Tx</th>
+                <th>{t("thTokenId")}</th>
+                <th>{t("thFarmer")}</th>
+                <th>{t("thCropBatch")}</th>
+                <th>{t("thMoisture")}</th>
+                <th>{t("thAssignedGrade")}</th>
+                <th>{t("thNetRate")}</th>
+                <th>{t("thTotalPayout")}</th>
+                <th>{t("thTimeTx")}</th>
               </tr>
             </thead>
             <tbody>
