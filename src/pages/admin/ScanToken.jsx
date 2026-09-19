@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import jsQR from "jsqr";
 import AdminLayout from "./AdminLayout";
 import { useMandi } from "./MandiContext";
+import { useLanguage } from "../../context/LanguageContext";
+import LanguageSelector from "../../components/LanguageSelector";
 
 function ScanToken() {
   const { tokens, updateTokenStatus, stats, recordScan } = useMandi();
@@ -337,6 +339,7 @@ function ScanToken() {
         </div>
 
         <div className="topbar-actions">
+          <LanguageSelector />
           <button
             type="button"
             className="btn-secondary"

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AdminLayout from "./AdminLayout";
+import LanguageSelector from "../../components/LanguageSelector";
 
 const INITIAL_FACILITIES = [
   {
@@ -163,6 +164,7 @@ function Inventory() {
           </p>
         </div>
         <div className="topbar-actions">
+          <LanguageSelector />
           <button
             className="btn-primary"
             onClick={() => handleOpenDispatch()}

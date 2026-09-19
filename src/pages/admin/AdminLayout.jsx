@@ -1,14 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
+import { useLanguage } from "../../context/LanguageContext";
 import "./admin.css";
 
 function AdminLayout({ children }) {
   const location = useLocation();
+  const { t } = useLanguage();
 
   const navItems = [
     {
       to: "/admin/dashboard",
-      title: "Command Center",
-      desc: "Mandi operations overview",
+      title: t("commandCenter"),
+      desc: t("commandCenterDesc"),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="3" width="7" height="7"></rect>
@@ -20,8 +22,8 @@ function AdminLayout({ children }) {
     },
     {
       to: "/admin/scan",
-      title: "Token Scanner",
-      desc: "Gate verification",
+      title: t("tokenScanner"),
+      desc: t("tokenScannerDesc"),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
@@ -34,8 +36,8 @@ function AdminLayout({ children }) {
     },
     {
       to: "/admin/quality",
-      title: "Quality Assessment",
-      desc: "Weight, grade & pricing",
+      title: t("qualityAssessment"),
+      desc: t("qualityAssessmentDesc"),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -46,8 +48,8 @@ function AdminLayout({ children }) {
     },
     {
       to: "/admin/inventory",
-      title: "Inventory",
-      desc: "Storage & dispatch ledger",
+      title: t("inventory"),
+      desc: t("inventoryDesc"),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
@@ -72,13 +74,13 @@ function AdminLayout({ children }) {
               </svg>
             </div>
             <div className="brand-titles">
-              <h2 className="brand-name">AgriFlow</h2>
-              <span className="brand-sub">Mandi Admin Portal</span>
+              <h2 className="brand-name">{t("brandName")}</h2>
+              <span className="brand-sub">{t("brandSub")}</span>
             </div>
           </div>
 
           {/* Category */}
-          <div className="sidebar-category">Procurement Operations</div>
+          <div className="sidebar-category">{t("procurementOps")}</div>
 
           {/* Links */}
           <nav className="sidebar-nav">
@@ -106,16 +108,16 @@ function AdminLayout({ children }) {
           <div className="blockchain-card">
             <div className="sync-dot-pulse"></div>
             <div>
-              <p className="blockchain-title">Blockchain Synced</p>
-              <p className="blockchain-meta">Block #18,42,209 · 2s ago</p>
+              <p className="blockchain-title">{t("blockchainSynced")}</p>
+              <p className="blockchain-meta">{t("blockMeta")}</p>
             </div>
           </div>
 
           <div className="user-profile-badge">
             <div className="avatar-initials">PO</div>
             <div className="user-info">
-              <p className="user-name">Procurement Officer</p>
-              <p className="user-role">Mandi Code: RJ-JPR-04</p>
+              <p className="user-name">{t("procurementOfficer")}</p>
+              <p className="user-role">{t("mandiCode")}</p>
             </div>
           </div>
         </div>

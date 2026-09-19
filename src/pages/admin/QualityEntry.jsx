@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AdminLayout from "./AdminLayout";
+import LanguageSelector from "../../components/LanguageSelector";
 
 const ACTIVE_TOKENS = [
   { id: "#AGRI-8403", farmer: "Sunita Devi", crop: "Paddy (PR-114)", basePrice: 2183, weight: 60, moisture: 11.2 },
@@ -115,6 +116,7 @@ function QualityEntry() {
           </p>
         </div>
         <div className="topbar-actions">
+          <LanguageSelector />
           <span className="mandi-badge text-dark-slate">
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
             Laboratory Bay #02 Active

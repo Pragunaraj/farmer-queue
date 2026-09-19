@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "./AdminLayout";
 import { useMandi } from "./MandiContext";
+import { useLanguage } from "../../context/LanguageContext";
+import LanguageSelector from "../../components/LanguageSelector";
 
 const CROP_PRICES = {
   "Wheat (HD-2967)": "₹ 2,275 / Qtl",
@@ -31,6 +33,7 @@ const HOURS_LIST = ["9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "
 function Dashboard() {
   // Shared state from MandiContext (synced with ScanToken and across tabs)
   const { tokens, addToken } = useMandi();
+  const { t, language } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("All Tokens");
@@ -59,11 +62,11 @@ function Dashboard() {
   }, []);
 
   const filterOptions = [
-    "All Tokens",
-    "Waiting",
-    "Gate Verified",
-    "In Inspection",
-    "Paid",
+    { key: "All Tokens", label: t("allTokens") },
+    { key: "Waiting", label: t("filterWaiting") },
+    { key: "Gate Verified", label: t("filterGateVerified") },
+    { key: "In Inspection", label: t("filterInInspection") },
+    { key: "Paid", label: t("filterPaid") },
   ];
 
   // Real-time table filter based on status and search query
@@ -88,6 +91,22 @@ function Dashboard() {
   const getCountByStatus = (status) => {
     if (status === "All Tokens") return tokens.length;
     return tokens.filter((t) => t.status === status).length;
+  };
+
+  // Status label translation helper
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "Waiting":
+        return t("statusWaiting");
+      case "Gate Verified":
+        return t("statusGateVerified");
+      case "In Inspection":
+        return t("statusInInspection");
+      case "Paid":
+        return t("statusPaid");
+      default:
+        return status;
+    }
   };
 
   // Status CSS helper
@@ -217,13 +236,16 @@ function Dashboard() {
       {/* Top Banner & Action Controls */}
       <header className="admin-topbar">
         <div className="page-intro">
-          <h1>Command Center</h1>
-          <p>Real-time Mandi procurement telemetry, throughput metrics, and incoming token flow.</p>
+          <h1>{t("headerTitle")}</h1>
+          <p>{t("headerSubtitle")}</p>
         </div>
         <div className="topbar-actions">
+          {/* Language Selector Pill */}
+          <LanguageSelector />
+
           <span className="mandi-badge">
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
-            Mandi: Jaipur Central RJ-04
+            {t("mandiBadge")}
           </span>
           <button
             className="btn-primary"
@@ -234,7 +256,7 @@ function Dashboard() {
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            Issue Token
+            {t("issueTokenBtn")}
           </button>
           <button
             className="btn-secondary"
@@ -244,7 +266,7 @@ function Dashboard() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
             </svg>
-            Sync Data
+            {t("syncDataBtn")}
           </button>
         </div>
       </header>
@@ -253,7 +275,7 @@ function Dashboard() {
       <section className="kpi-grid">
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-label">Today's Intake</span>
+            <span className="kpi-label">{t("todaysIntake")}</span>
             <div className="kpi-icon-pill" style={{ background: "#ecfdf5", color: "#059669" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
@@ -268,13 +290,13 @@ function Dashboard() {
               <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
               <polyline points="16 7 22 7 22 13"></polyline>
             </svg>
-            <span>+14.2% vs yesterday</span>
+            <span>{t("intakeVsYesterday")}</span>
           </div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-label">Active Pipeline</span>
+            <span className="kpi-label">{t("activePipeline")}</span>
             <div className="kpi-icon-pill" style={{ background: "#eff6ff", color: "#2563eb" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
@@ -284,17 +306,17 @@ function Dashboard() {
               </svg>
             </div>
           </div>
-          <p className="kpi-value">{tokens.length} Tokens</p>
+          <p className="kpi-value">{tokens.length} {t("tokensCount")}</p>
           <div className="kpi-trend">
             <span>
-              {getCountByStatus("Waiting")} waiting · {getCountByStatus("Gate Verified")} gate · {getCountByStatus("In Inspection")} in test
+              {getCountByStatus("Waiting")} {t("waitingSub")} · {getCountByStatus("Gate Verified")} {t("gateSub")} · {getCountByStatus("In Inspection")} {t("inTestSub")}
             </span>
           </div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-label">Avg Quality Grade</span>
+            <span className="kpi-label">{t("avgQualityGrade")}</span>
             <div className="kpi-icon-pill" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="8" r="6"></circle>
@@ -302,18 +324,18 @@ function Dashboard() {
               </svg>
             </div>
           </div>
-          <p className="kpi-value">Grade A (94%)</p>
+          <p className="kpi-value">{t("gradeAStandard")}</p>
           <div className="kpi-trend positive">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            <span>Avg moisture: 10.9% (Optimal)</span>
+            <span>{t("moistureOptimal")}</span>
           </div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-label">Total MSP Disbursed</span>
+            <span className="kpi-label">{t("totalMspDisbursed")}</span>
             <div className="kpi-icon-pill" style={{ background: "#fffbeb", color: "#d97706" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="20" height="14" x="2" y="5" rx="2"></rect>
@@ -323,7 +345,7 @@ function Dashboard() {
           </div>
           <p className="kpi-value">₹ 28,32,960</p>
           <div className="kpi-trend positive">
-            <span>100% Escrow Blockchain Synced</span>
+            <span>{t("escrowSyncedText")}</span>
           </div>
         </div>
       </section>
@@ -334,16 +356,16 @@ function Dashboard() {
         <div className="chart-panel">
           <div className="panel-header">
             <div>
-              <h2 className="panel-title">Hourly Procurement Throughput</h2>
+              <h2 className="panel-title">{t("hourlyThroughputTitle")}</h2>
               <p className="panel-subtitle">
                 {selectedFilter === "All Tokens"
-                  ? "Quintals processed per hour"
-                  : `${selectedFilter} load: ${totalFilteredQuintals} Quintals`}
+                  ? t("hourlyThroughputDesc")
+                  : `${filterOptions.find((f) => f.key === selectedFilter)?.label || selectedFilter}: ${totalFilteredQuintals} ${t("quintalsPill")}`}
               </p>
             </div>
             <div className="chart-legend-badge">
               <span className="legend-dot"></span>
-              {selectedFilter === "All Tokens" ? "Quintals" : selectedFilter}
+              {selectedFilter === "All Tokens" ? t("quintalsPill") : (filterOptions.find((f) => f.key === selectedFilter)?.label || selectedFilter)}
             </div>
           </div>
 
@@ -376,7 +398,7 @@ function Dashboard() {
                       className={`bar-column ${item.isPeak ? "peak-hour" : ""}`}
                     >
                       <div className="bar-tooltip">
-                        {item.time}: {item.value} Qtl {item.isPeak ? "⚡ Peak" : ""} ({selectedFilter})
+                        {item.time}: {item.value} Qtl {item.isPeak ? `⚡ ${t("peakTraffic")}` : ""} ({filterOptions.find((f) => f.key === selectedFilter)?.label || selectedFilter})
                       </div>
                       <div
                         className="bar-fill"
@@ -402,11 +424,11 @@ function Dashboard() {
           </div>
 
           <div className="chart-footer-stat">
-            <span>Peak Hour ({selectedFilter})</span>
+            <span>{t("peakTraffic")} ({filterOptions.find((f) => f.key === selectedFilter)?.label || selectedFilter})</span>
             <span className="highlight-metric">
               {peakItem
-                ? `${peakItem.time} · ${peakItem.value} Quintals`
-                : "No active queue load"}
+                ? `${peakItem.time} · ${peakItem.value} ${t("quintalsPill")}`
+                : "0"}
             </span>
           </div>
         </div>
@@ -415,9 +437,9 @@ function Dashboard() {
         <div className="table-panel">
           <div className="table-panel-header">
             <div>
-              <h2 className="panel-title">Live Operations Queue</h2>
+              <h2 className="panel-title">{t("liveQueueTitle")}</h2>
               <p className="panel-subtitle">
-                {filteredTokens.length} {filteredTokens.length === 1 ? "token" : "tokens"} · Updated {secondsAgo}s ago
+                {filteredTokens.length} {t("tokensLabel")} · {t("updatedText")} {secondsAgo}{t("secondsAgoText")}
               </p>
             </div>
 
@@ -432,7 +454,7 @@ function Dashboard() {
               <input
                 type="text"
                 className="search-input"
-                placeholder="Search token, farmer or crop"
+                placeholder={t("searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -456,14 +478,14 @@ function Dashboard() {
               </svg>
             </span>
             {filterOptions.map((filter) => {
-              const count = getCountByStatus(filter);
+              const count = getCountByStatus(filter.key);
               return (
                 <button
-                  key={filter}
-                  className={`filter-pill ${selectedFilter === filter ? "active" : ""}`}
-                  onClick={() => setSelectedFilter(filter)}
+                  key={filter.key}
+                  className={`filter-pill ${selectedFilter === filter.key ? "active" : ""}`}
+                  onClick={() => setSelectedFilter(filter.key)}
                 >
-                  {filter}
+                  {filter.label}
                   <span className="filter-badge-count">{count}</span>
                 </button>
               );
@@ -475,12 +497,12 @@ function Dashboard() {
             <table className="queue-table">
               <thead>
                 <tr>
-                  <th>Token #</th>
-                  <th>Farmer</th>
-                  <th>Crop</th>
-                  <th>Slot</th>
-                  <th>Status</th>
-                  <th style={{ textAlign: "right" }}>Action</th>
+                  <th>{t("thTokenId")}</th>
+                  <th>{t("thFarmer")}</th>
+                  <th>{t("thCrop")}</th>
+                  <th>{t("thSlot")}</th>
+                  <th>{t("thStatus")}</th>
+                  <th style={{ textAlign: "right" }}>{t("thAction")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -506,7 +528,7 @@ function Dashboard() {
                       <td>
                         <span className={`status-pill ${getStatusClass(item.status)}`}>
                           <span className="status-dot"></span>
-                          {item.status}
+                          {getStatusLabel(item.status)}
                         </span>
                       </td>
                       <td style={{ textAlign: "right" }}>
@@ -531,10 +553,10 @@ function Dashboard() {
                   <tr>
                     <td colSpan="6" style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-muted)" }}>
                       <div style={{ marginBottom: "8px", fontWeight: 600, color: "var(--text-primary)" }}>
-                        No procurement tokens found
+                        {t("noMatchingTokens")}
                       </div>
                       <p style={{ fontSize: "13px", margin: "0 0 16px" }}>
-                        No entries match "{searchQuery}" under "{selectedFilter}".
+                        No entries match "{searchQuery}".
                       </p>
                       <button
                         className="btn-secondary"
@@ -561,9 +583,9 @@ function Dashboard() {
             <form onSubmit={handleCreateToken}>
               <div className="modal-header">
                 <div>
-                  <h3 className="modal-title">Issue Procurement Token</h3>
+                  <h3 className="modal-title">{t("modalIssueTitle")}</h3>
                   <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                    Generate appointment slot & blockchain queue token
+                    {t("modalIssueDesc")}
                   </span>
                 </div>
                 <button
@@ -578,11 +600,11 @@ function Dashboard() {
               <div className="modal-body">
                 <div className="form-grid">
                   <div className="form-group full-width">
-                    <label className="form-label">Farmer Full Name *</label>
+                    <label className="form-label">{t("labelFarmerName")} *</label>
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="e.g. Suresh Kumar"
+                      placeholder={t("placeholderFarmerName")}
                       required
                       value={formData.farmer}
                       onChange={(e) => setFormData({ ...formData, farmer: e.target.value })}
@@ -590,7 +612,7 @@ function Dashboard() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Contact Phone</label>
+                    <label className="form-label">{t("labelPhone")}</label>
                     <input
                       type="tel"
                       className="form-input"
@@ -601,18 +623,18 @@ function Dashboard() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Tehsil / Village</label>
+                    <label className="form-label">{t("labelVillage")}</label>
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="e.g. Bassi, Jaipur"
+                      placeholder={t("placeholderVillage")}
                       value={formData.village}
                       onChange={(e) => setFormData({ ...formData, village: e.target.value })}
                     />
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Produce Crop & Variety</label>
+                    <label className="form-label">{t("labelCropVariety")}</label>
                     <select
                       className="form-select"
                       value={formData.crop}
@@ -627,7 +649,7 @@ function Dashboard() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Batch Quantity (Quintals)</label>
+                    <label className="form-label">{t("labelQuantity")}</label>
                     <input
                       type="number"
                       min="1"
@@ -639,7 +661,7 @@ function Dashboard() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Preferred Mandi Slot</label>
+                    <label className="form-label">{t("labelAppointmentSlot")}</label>
                     <select
                       className="form-select"
                       value={formData.slot}
@@ -655,16 +677,16 @@ function Dashboard() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Initial Status</label>
+                    <label className="form-label">{t("labelInitialStatus")}</label>
                     <select
                       className="form-select"
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     >
-                      <option value="Waiting">Waiting (Gate Entry Pending)</option>
-                      <option value="Gate Verified">Gate Verified (Arrived)</option>
-                      <option value="In Inspection">In Inspection (Lab Bay)</option>
-                      <option value="Paid">Paid (Procured)</option>
+                      <option value="Waiting">{t("statusWaiting")} (Gate Entry Pending)</option>
+                      <option value="Gate Verified">{t("statusGateVerified")} (Arrived)</option>
+                      <option value="In Inspection">{t("statusInInspection")} (Lab Bay)</option>
+                      <option value="Paid">{t("statusPaid")} (Procured)</option>
                     </select>
                   </div>
                 </div>
@@ -676,10 +698,10 @@ function Dashboard() {
                   className="btn-secondary"
                   onClick={() => setIsCreateModalOpen(false)}
                 >
-                  Cancel
+                  {t("btnCancel")}
                 </button>
                 <button type="submit" className="btn-primary">
-                  Generate Token & Enqueue
+                  {t("btnGenerateToken")}
                 </button>
               </div>
             </form>
@@ -693,7 +715,7 @@ function Dashboard() {
           <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
-                <h3 className="modal-title">Procurement Token Details</h3>
+                <h3 className="modal-title">{t("modalDetailsTitle")}</h3>
                 <span style={{ fontSize: "12px", color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace" }}>
                   {selectedToken.id}
                 </span>
@@ -708,48 +730,48 @@ function Dashboard() {
 
             <div className="modal-body">
               <div className="detail-row">
-                <span className="detail-label">Farmer Name:</span>
+                <span className="detail-label">{t("labelFarmer")}:</span>
                 <span className="detail-value">{selectedToken.farmer}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Phone & Village:</span>
+                <span className="detail-label">{t("labelContact")}:</span>
                 <span className="detail-value">{selectedToken.phone} ({selectedToken.village})</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Produce & Variety:</span>
+                <span className="detail-label">{t("labelCommodity")}:</span>
                 <span className="detail-value">{selectedToken.crop}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Batch Quantity:</span>
+                <span className="detail-label">{t("labelQuantityQtl")}:</span>
                 <span className="detail-value">{selectedToken.quantity}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Designated Slot:</span>
+                <span className="detail-label">{t("labelSlot")}:</span>
                 <span className="detail-value" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                   {selectedToken.slot}
                 </span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Moisture Reading:</span>
+                <span className="detail-label">{t("labelMoisture")}:</span>
                 <span className="detail-value">{selectedToken.moisture}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Quality Assessment:</span>
+                <span className="detail-label">{t("labelAssessedGrade")}:</span>
                 <span className="detail-value">{selectedToken.grade}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">MSP Base Price:</span>
+                <span className="detail-label">{t("labelMspRate")}:</span>
                 <span className="detail-value" style={{ color: "#059669" }}>{selectedToken.price}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Current Pipeline Status:</span>
+                <span className="detail-label">{t("labelStatus")}:</span>
                 <span className={`status-pill ${getStatusClass(selectedToken.status)}`}>
                   <span className="status-dot"></span>
-                  {selectedToken.status}
+                  {getStatusLabel(selectedToken.status)}
                 </span>
               </div>
               <div className="detail-row" style={{ borderBottom: "none" }}>
-                <span className="detail-label">Blockchain Hash:</span>
+                <span className="detail-label">{t("labelTxHash")}:</span>
                 <span className="detail-value" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#64748b" }}>
                   {selectedToken.txHash}
                 </span>
@@ -761,7 +783,7 @@ function Dashboard() {
                 className="btn-secondary"
                 onClick={() => setSelectedToken(null)}
               >
-                Close
+                {t("btnClose")}
               </button>
             </div>
           </div>
